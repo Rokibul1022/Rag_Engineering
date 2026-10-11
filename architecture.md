@@ -140,14 +140,24 @@ Parents are stored for context but never embedded, so they never appear in `embe
 
 Token counting is a regex (`\w+|[^\w\s]`), deliberately dependency-free. Real tokenizers count roughly 20–40% more; swap `count_tokens()` for `tiktoken` or your embedding model's tokenizer when you need exact budgets.
 
-## 5. Extending toward the evaluated Q&A system
+## 5. Evaluation (`evaluation/`)
+
+| Part | Needs an answer key? | What it measures |
+|---|---|---|
+| `checks.py` | no | Integrity of one run: no text lost in parsing, no residual noise, nothing removed that should stay, no noise leaking into chunks, size limit, sentence/heading boundaries, parent-child links, table rows intact, deterministic and unique chunk IDs, metadata completeness |
+| `benchmark.py` + `gold.json` | yes | Heading precision/recall, table/footnote/header counts, must-contain / must-not-contain text, OCR character and word error rate, ingestion status, incremental re-index savings |
+| `retrieval.py` | yes (questions) | For each chunking strategy: is the answer kept in a chunk, and does a simple TF-IDF search return it (Hit@1, Hit@3, MRR, via parent) |
+
+The benchmark uses a temporary store, so it never touches your library. The gold file is written from what is actually in each sample, not from the parser's output. Limitation: only 16 questions, so strategy rankings are indicative, not conclusive.
+
+## 6. Extending toward the evaluated Q&A system
 
 1. After `Store.commit()`, embed `diff["embed_these"]` and delete `diff["delete_vectors_for"]` in your vector DB, using `chunk_id` as the vector ID and the chunk metadata as filters.
 2. At query time: retrieve children → expand to `parent_id` text → answer with the `citation` string.
 3. Evaluate retrieval with a small gold set (question → expected chunk/page). The `source`, `page` and `section_path` metadata make hit-rate and citation checks easy.
 4. Replace `semantic_chunks`' word-overlap similarity with embeddings.
 
-## 6. Known limitations
+## 7. Known limitations
 
 - De-hyphenation joins when the next part is lowercase: `well-⏎known` becomes `wellknown`.
 - Header/footer detection needs ≥ 2 pages; single-page PDFs only lose standalone page numbers.

@@ -85,6 +85,12 @@ details.c>summary .hl{font-weight:400;color:var(--mute);font-size:13px;text-alig
 .empty{padding:60px 20px;text-align:center;color:var(--mute)}
 .empty h2{color:var(--ink);margin-bottom:6px}
 .tbl-html{overflow:auto;margin:4px 0}
+.st{display:inline-block;min-width:46px;text-align:center;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:700}
+.st.pass{background:var(--ok-soft);color:var(--ok)} .st.warn{background:var(--warn-soft);color:var(--warn)} .st.fail{background:var(--bad-soft);color:var(--bad)} .st.na{background:var(--panel);color:var(--mute)}
+.score{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;margin:4px 0 12px}
+.score .big{font-size:40px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.score .big.pass{color:var(--ok)} .score .big.warn{color:var(--warn)} .score .big.fail{color:var(--bad)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:60px}.bar>i{display:block;height:100%;background:var(--accent)}
 @media (max-width:900px){.app{grid-template-columns:1fr}aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:18px 16px}.diff{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.blk{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:no-preference){.banner{animation:in .25s ease-out}@keyframes in{from{opacity:.4}to{opacity:1}}}
 </style>
@@ -137,11 +143,11 @@ details.c>summary .hl{font-weight:400;color:var(--mute);font-size:13px;text-alig
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const vis = s => esc(s).replace(/\u00ad/g,'<b title="soft hyphen">¬</b>').replace(/\u200b/g,'<b title="zero-width space">∅</b>').replace(/\u00a0/g,'<b title="non-breaking space">␣</b>').replace(/\ufeff/g,'<b title="BOM">∅</b>').replace(/\n/g,'↵\n');
-const TABS = [["source","1","Source & versioning"],["raw","2","Raw text"],["parse","3","Parsed structure"],["norm","4","Normalized text"],["chunks","5","Chunks"],["eng","","Document engineering"],["lib","","Library"]];
-let result = null, concepts = [], tab = "source", chosen = null;
+const TABS = [["source","1","Source & versioning"],["raw","2","Raw text"],["parse","3","Parsed structure"],["norm","4","Normalized text"],["chunks","5","Chunks"],["eval","6","Evaluate"],["eng","","Document engineering"],["lib","","Library"]];
+let result = null, concepts = [], tab = "source", chosen = null, bench = null;
 
 function renderTabs(){
-  $("#tabs").innerHTML = TABS.map(([id,n,label],i)=>`${i===5?'<span class="sep"></span>':''}<button class="tab" role="tab" aria-selected="${tab===id}" data-t="${id}">${n?`<span class="n">${n}</span>`:''}${label}</button>`).join("");
+  $("#tabs").innerHTML = TABS.map(([id,n,label],i)=>`${i===6?'<span class="sep"></span>':''}<button class="tab" role="tab" aria-selected="${tab===id}" data-t="${id}">${n?`<span class="n">${n}</span>`:''}${label}</button>`).join("");
   document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.t;renderTabs();renderView()});
 }
 async function api(url,opt){const r=await fetch(url,opt);const j=await r.json();if(!r.ok)throw new Error(j.error||r.statusText);return j}
@@ -169,6 +175,7 @@ drop.ondrop=e=>{e.preventDefault();drop.classList.remove("over");if(e.dataTransf
 
 function renderView(){
   const v=$("#view");
+  if(tab==="eval"){v.innerHTML=viewEval();bindEval();return}
   if(tab==="eng"){v.innerHTML=viewEng();return}
   if(tab==="lib"){loadLibrary();return}
   if(!result){v.innerHTML='<div class="empty"><h2>Nothing processed yet</h2><p>Choose a file or a sample on the left, then press Process document.</p></div>';return}
@@ -284,6 +291,63 @@ function viewChunks(){
     html+=items.map(k=>`<div class="chunk flat"><div class="meta">${chunkMeta(k)}<br>citation: ${esc(k.citation)}</div><div class="ct">${esc(k.text)}</div></div>`).join("");
   }
   return html;
+}
+
+// ---------------------------------------------------------------- 6 evaluate
+const pct=x=>Math.round(x*100)+"%";
+const scoreClass=n=>n>=90?"pass":n>=70?"warn":"fail";
+function checksTable(ev){
+  let last="",rows="";
+  ev.checks.forEach(c=>{
+    if(c.group!==last){rows+=`<tr><th colspan="4">${esc(c.group)}</th></tr>`;last=c.group}
+    rows+=`<tr><td><span class="st ${c.status==="n/a"?"na":c.status}">${esc(c.status)}</span></td><td>${esc(c.name)}</td><td>${esc(c.value)}</td><td class="note">${esc(c.detail)}</td></tr>`;
+  });
+  return `<table class="t"><tr><th style="width:70px">Result</th><th>Check</th><th>Measured</th><th>Why it matters / what was found</th></tr>${rows}</table>`;
+}
+function viewEval(){
+  let html=`<h3 style="margin-top:0">A. Integrity checks for this document</h3>`;
+  if(!result)html+='<p class="lead">Process a document first. These checks need no answer key: they test whether the parsing and chunks are internally valid.</p>';
+  else if(!result.evaluation||!result.evaluation.checks.length)html+='<p class="lead">Nothing to evaluate: the document could not be parsed.</p>';
+  else{
+    const ev=result.evaluation;
+    html+=`<p class="lead">Are the parsing, normalization and chunks of <b>${esc(result.source.source_name)}</b> valid? Each check measures one property.</p>
+    <div class="score"><span class="big ${scoreClass(ev.score)}">${ev.score}<small style="font-size:16px;font-weight:400;color:var(--mute)"> / 100</small></span>
+    <span><span class="st pass">${ev.passed}</span> passed &nbsp; <span class="st warn">${ev.warned}</span> warnings &nbsp; <span class="st fail">${ev.failed}</span> failed</span></div>${checksTable(ev)}`;
+  }
+  html+=`<h3>B. Benchmark against known answers</h3>
+  <p class="lead">Runs all sample files through the pipeline and compares the result with an answer key (<code>evaluation/gold.json</code>): headings, tables, footnotes, removed headers, OCR error rate, and whether a simple search finds the right chunk for each question. It uses a temporary store, so your library is not touched.</p>
+  <button id="runBench" class="primary" style="width:auto;margin:0 0 14px;padding:8px 16px">${bench?"Run benchmark again":"Run benchmark"}</button> <span id="benchStatus" class="note"></span>
+  <div id="benchOut">${bench?benchHtml(bench):""}</div>`;
+  return html;
+}
+function benchHtml(b){
+  const s=b.summary,ok=s.gold_checks_passed===s.gold_checks_total;
+  let h=`<div class="banner ${ok?"ok":"warn"}"><h2>${s.gold_checks_passed} of ${s.gold_checks_total} gold checks passed</h2>Mean integrity score ${s.integrity_mean_score}/100 · failed integrity checks: ${s.integrity_failed_checks} · settings: max ${b.settings.max_tokens} tokens, overlap ${b.settings.overlap}</div>
+  <h3 style="margin-top:0">Which chunking strategy keeps and finds the answers?</h3>
+  <p class="lead">${Object.values(b.retrieval_by_strategy)[0]?.questions||0} questions. "Answer kept" = the answer text exists inside some chunk (chunking did not destroy it). Hit@1 / Hit@3 = a simple TF-IDF search returns a chunk containing the answer in the top 1 / top 3. MRR rewards ranking it higher. "Via parent" = the answer is in the parent section of a top-3 chunk.</p>
+  <table class="t"><tr><th>Strategy</th><th>Answer kept</th><th>Hit@1</th><th>Hit@3</th><th>MRR</th><th>Hit@3 via parent</th></tr>
+  ${Object.values(b.retrieval_by_strategy).map(r=>`<tr><td>${esc(r.label)}</td><td class="num">${pct(r.answer_kept)}</td><td class="num">${pct(r.hit1)}</td><td class="num">${pct(r.hit3)}</td><td class="num">${r.mrr.toFixed(2)}</td><td class="num">${pct(r.parent_hit3)}</td></tr>`).join("")}</table>
+  <h3>Per sample</h3>`;
+  b.samples.forEach(r=>{
+    const bad=r.checks.filter(c=>!c.ok).length,ig=r.integrity&&r.integrity.score!=null?r.integrity:null;
+    h+=`<details class="c"><summary><span>${esc(r.file)}</span><span class="hl"><span class="st ${bad?"fail":"pass"}">${bad?bad+" failed":"all passed"}</span>${ig?` &nbsp; integrity ${ig.score}/100`:""}</span></summary>
+    <table class="t">${r.checks.map(c=>`<tr><td style="width:70px"><span class="st ${c.ok?"pass":"fail"}">${c.ok?"pass":"fail"}</span></td><td>${esc(c.name)}</td><td class="note">${esc(c.detail)}</td></tr>`).join("")}</table>
+    ${Object.keys(r.metrics).length?`<p class="note">Metrics: ${Object.entries(r.metrics).map(([k,v])=>`${esc(k)} = ${esc(v)}`).join(" · ")}</p>`:""}
+    ${ig?`<details><summary class="note" style="cursor:pointer">Integrity checks (${ig.passed} pass, ${ig.warned} warn, ${ig.failed} fail)</summary>${checksTable(ig)}</details>`:""}
+    ${Object.keys(r.retrieval).length?`<details><summary class="note" style="cursor:pointer;padding-top:6px">Question-by-question retrieval</summary><table class="t"><tr><th>Question</th><th>Expected</th>${Object.keys(r.retrieval).map(k=>`<th>${esc(k)} rank</th>`).join("")}</tr>
+      ${r.retrieval[Object.keys(r.retrieval)[0]].details.map((d,i)=>`<tr><td>${esc(d.q)}</td><td><code>${esc(d.answer)}</code></td>${Object.values(r.retrieval).map(x=>{const y=x.details[i];return `<td class="num">${y.rank?y.rank:(y.answer_in_any_chunk?"not found":"lost")}</td>`}).join("")}</tr>`).join("")}</table>
+      <p class="note">"not found" = answer exists in a chunk but the search missed it; "lost" = chunking destroyed it.</p></details>`:""}</details>`;
+  });
+  return h;
+}
+function bindEval(){
+  const b=$("#runBench");if(!b)return;
+  b.onclick=async()=>{
+    b.disabled=true;$("#benchStatus").textContent="Running (a few seconds)...";
+    try{bench=await api(`/api/benchmark?max_tokens=${encodeURIComponent($("#maxTokens").value)}&overlap=${encodeURIComponent($("#overlap").value)}`);$("#benchOut").innerHTML=benchHtml(bench);$("#benchStatus").textContent="";b.textContent="Run benchmark again"}
+    catch(e){$("#benchStatus").innerHTML='<span class="note bad">'+esc(e.message)+'</span>'}
+    b.disabled=false;
+  };
 }
 
 // ---------------------------------------------------------------- engineering

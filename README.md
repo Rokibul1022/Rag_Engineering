@@ -31,6 +31,15 @@ Without Tesseract everything else works; scanned files just report a clear `OCR_
 5. Change *Chunking strategy* and *Max tokens*, process the same file again, compare the table on the *Chunks* tab.
 6. Read the *Document engineering* tab: every concept is explained next to what happened to your document.
 
+## Evaluate
+- **In the browser:** open the **6 Evaluate** tab. Part A shows integrity checks for the document you just processed; part B runs a benchmark on the samples against `evaluation/gold.json`.
+- **In the terminal:**
+  ```bash
+  python evaluate.py                 # benchmark on the samples, writes evaluation/report.md
+  python evaluate.py --file my.pdf   # integrity checks on any document (no answer key needed)
+  python evaluate.py --gold my.json  # benchmark with your own answer key
+  ```
+
 ## Tests
 ```bash
 pip install -r requirements-dev.txt

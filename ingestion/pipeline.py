@@ -122,6 +122,13 @@ def run_pipeline(path, source_name=None, strategy="structure", max_tokens=200, o
         },
     }
     result["evidence"] = build_evidence(result, blocks, chunks, parsed)
+    if chunks:
+        from evaluation.checks import run_checks      # imported here: evaluation depends on ingestion, not the other way round
+        result["evaluation"] = run_checks(parsed=parsed, blocks=blocks, chunks=chunks, chunk_dicts=chunk_dicts, strategy=strategy,
+                                          max_tokens=int(max_tokens), overlap=int(overlap), doc_id=doc_id,
+                                          file_type=parsed.doc_meta.get("file_type"), near_dups=near)
+    else:
+        result["evaluation"] = {"score": None, "passed": 0, "warned": 0, "failed": 0, "checks": []}
     return result
 
 

@@ -380,6 +380,7 @@ def parse_html(path: Path) -> ParseResult:
     for m in soup.find_all("meta"):
         if m.get("name") in ("author", "description"):
             meta[m["name"]] = m.get("content", "")
+    dropped = " ".join(t.get_text(" ") for t in soup(["script", "style", "noscript", "template", "svg", "iframe"]))
     for t in soup(["script", "style", "noscript", "template", "svg", "iframe"]):
         t.decompose()
 
@@ -436,7 +437,9 @@ def parse_html(path: Path) -> ParseResult:
     visit(soup.body or soup)
     if not any(not b.removed_reason and b.text.strip() for b in blocks):
         warnings.append(warn("error", "EMPTY_DOCUMENT", "No readable text found in this HTML."))
-    return ParseResult(blocks, raw_text, warnings, meta, "BeautifulSoup (html.parser)")
+    res = ParseResult(blocks, raw_text, warnings, meta, "BeautifulSoup (html.parser)")
+    res.dropped_text = dropped
+    return res
 
 
 # ---------------------------------------------------------------- plain text / markdown

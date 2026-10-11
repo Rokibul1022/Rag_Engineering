@@ -29,6 +29,7 @@ class ParseResult:
     warnings: list = field(default_factory=list)
     doc_meta: dict = field(default_factory=dict)
     parser: str = ""
+    dropped_text: str = ""              # text removed on purpose (e.g. <script>), so evaluation does not count it as lost
 
 
 def warn(level: str, code: str, message: str, page: int | None = None) -> dict:

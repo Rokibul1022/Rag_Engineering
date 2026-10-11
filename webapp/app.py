@@ -89,6 +89,17 @@ def create_app(data_dir=None) -> Flask:
     def ocr_info():
         return jsonify(ocr_status())
 
+    @app.get("/api/benchmark")
+    def benchmark():
+        """Run the gold-set benchmark on the sample files. Uses a throw-away store: your library is untouched."""
+        from evaluation.benchmark import run_benchmark
+        try:
+            mt = max(20, min(2000, int(request.args.get("max_tokens", 200))))
+            ov = max(0, min(mt // 2, int(request.args.get("overlap", 30))))
+            return jsonify(run_benchmark(SAMPLES_DIR, max_tokens=mt, overlap=ov))
+        except Exception as e:
+            return jsonify({"error": f"{type(e).__name__}: {e}"}), 500
+
     @app.get("/api/library")
     def library():
         return jsonify(store.list_documents())
