@@ -1,0 +1,66 @@
+{
+  "_about": "Answer key written from what is actually IN each sample file (see samples/make_samples.py), not from the parser's output. To evaluate your own document, add an entry with the same fields.",
+  "samples": [
+    {"file": "messy_report.pdf", "expect_status": "new",
+     "expect": {"file_type": "pdf",
+       "headings": ["Quarterly Operations Report", "1. Executive Summary", "2. Financial Results", "3. Outlook", "4. Risks"],
+       "tables": 1, "footnotes": 3, "headers_footers_removed": 6, "exact_duplicates": 1,
+       "must_contain": ["successful rollout of new infrastructure in three regions",
+                        "currency movements remain a risk for the regions that bill in local currency",
+                        "Operating income rose to 4.2 million dollars",
+                        "| Asia | 4.1 | 4.8 | +17% |",
+                        "Support response time reduced by 30%"],
+       "must_not_contain": ["Confidential - Page", "ACME Corp - Quarterly Report", "(cid:", "infra-"]},
+     "qa": [
+       {"q": "How much did revenue grow compared with the previous quarter?", "answers": ["twelve percent"]},
+       {"q": "What was the revenue change for Asia between Q2 and Q3?", "answers": ["+17%"]},
+       {"q": "What was the total revenue in Q3?", "answers": ["| Total | 13.0 | 14.4 | +11% |"]},
+       {"q": "What is the operating income?", "answers": ["4.2 million dollars"]},
+       {"q": "Which risk involves networking hardware?", "answers": ["Supply chain delays"]},
+       {"q": "Are the figures audited?", "answers": ["unaudited"]}]},
+
+    {"file": "scan_note.png", "expect_status": "new",
+     "expect": {"file_type": "image", "headings": ["Delivery Note"], "tables": 0, "footnotes": 0, "headers_footers_removed": 0,
+       "ocr_reference": "Delivery Note Order number 10254 was shipped on 12 March 2026. Total amount due: $1,250.00 for 24 units. Please contact support if the delivery is late. Thank you for choosing Acme Logistics.",
+       "must_contain": ["10254", "$1,250.00"], "must_not_contain": []},
+     "qa": [
+       {"q": "What is the order number?", "answers": ["10254"]},
+       {"q": "What is the total amount due?", "answers": ["$1,250.00"]}]},
+
+    {"file": "scanned_report.pdf", "expect_status": "new",
+     "expect": {"file_type": "pdf", "headings": ["Delivery Note"], "tables": 0, "footnotes": 0, "headers_footers_removed": 0,
+       "ocr_reference": "Delivery Note Order number 10254 was shipped on 12 March 2026. Total amount due: $1,250.00 for 24 units. Please contact support if the delivery is late. Thank you for choosing Acme Logistics.",
+       "must_contain": ["10254", "$1,250.00"], "must_not_contain": []},
+     "qa": []},
+
+    {"file": "faq_page.html", "expect_status": "new",
+     "expect": {"file_type": "html", "headings": ["Acme Support FAQ", "Shipping", "Returns"], "tables": 1, "footnotes": 2, "headers_footers_removed": 3,
+       "must_contain": ["Orders are shipped within two business days.[1]", "| International | 7-14 days | 3-5 days |", "Pack the item securely"],
+       "must_not_contain": ["We use cookies", "Home Products Contact", "do not index me", "Copyright 2026"]},
+     "qa": [
+       {"q": "How long do I have to return an item?", "answers": ["30 days"]},
+       {"q": "How long does express delivery take internationally?", "answers": ["| International | 7-14 days | 3-5 days |"]},
+       {"q": "Can sale items be returned?", "answers": ["store credit only"]}]},
+
+    {"file": "handbook_v1.docx", "source_name": "handbook.docx", "expect_status": "new",
+     "expect": {"file_type": "docx", "headings": ["Employee Handbook", "Leave Policy", "Annual Leave", "Remote Work"], "tables": 1, "footnotes": 2, "headers_footers_removed": 2,
+       "must_contain": ["Employees receive 20 days of annual leave per calendar year", "Core hours are 10:00 to 16:00 local time.", "| 3+ years | 2 | Added to annual leave |"],
+       "must_not_contain": ["Acme HR - Internal use only"]},
+     "qa": [
+       {"q": "How many days of annual leave do employees get?", "answers": ["20 days"]},
+       {"q": "How many remote days per week are allowed?", "answers": ["three days per week"]},
+       {"q": "What are the core hours?", "answers": ["10:00 to 16:00"]}]},
+
+    {"file": "handbook_v2.docx", "source_name": "handbook.docx", "expect_status": "updated",
+     "expect_reindex": {"min_unchanged": 1, "max_embed_fraction": 0.8},
+     "expect": {"file_type": "docx", "headings": ["Employee Handbook", "Leave Policy", "Annual Leave", "Parental Leave", "Remote Work"], "tables": 1, "footnotes": 2, "headers_footers_removed": 2,
+       "must_contain": ["Employees receive 25 days of annual leave per calendar year", "twelve weeks of paid parental leave"],
+       "must_not_contain": ["20 days of annual leave", "Acme HR - Internal use only"]},
+     "qa": [
+       {"q": "How many days of annual leave do employees get?", "answers": ["25 days"]},
+       {"q": "How long is parental leave?", "answers": ["twelve weeks"]}]},
+
+    {"file": "copy_of_messy_report.pdf", "expect_status": "duplicate", "expect": {}, "qa": []},
+    {"file": "broken.pdf", "expect_status": "failed", "expect": {}, "qa": []}
+  ]
+}
