@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document ingestion lab</title>
+<style>
+:root{
+  --bg:#fbfbfc; --panel:#f1f3f5; --line:#d9dee3; --ink:#18212b; --mute:#5d6975;
+  --accent:#0d6b6e; --accent-soft:#dff0f0; --warn:#9a5b00; --warn-soft:#fff1d6; --bad:#a1262b; --bad-soft:#fde4e4; --ok:#216e3a; --ok-soft:#dff3e5;
+  --t-heading:#0d6b6e; --t-list:#2b5fb4; --t-table:#7a3fa0; --t-foot:#9a5b00; --t-gone:#8a949e;
+  --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif; --mono:ui-monospace,"Cascadia Mono",Consolas,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans)}
+h1,h2,h3{margin:0;font-weight:650;letter-spacing:-.01em}
+button,select,input{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:330px 1fr;min-height:100vh}
+aside{border-right:1px solid var(--line);padding:22px 20px;background:var(--panel);position:sticky;top:0;height:100vh;overflow:auto}
+main{padding:22px 32px 60px;min-width:0}
+.brand{font-size:20px;margin-bottom:2px} .sub{color:var(--mute);font-size:13px;margin:0 0 18px}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
+select,input[type=text],input[type=number]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.row{display:flex;gap:10px}.row>div{flex:1}
+.drop{border:2px dashed #aab4be;border-radius:8px;padding:18px 12px;text-align:center;background:#fff;cursor:pointer;color:var(--mute);font-size:14px}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)} .drop b{color:var(--ink)}
+button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)} button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;width:100%;margin-top:14px;padding:10px}
+button.primary:disabled{opacity:.6;cursor:wait}
+button.link{border:0;background:none;color:var(--accent);padding:0;text-decoration:underline}
+.chk{display:flex;gap:8px;align-items:center;font-weight:400;margin-top:12px}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+.note{font-size:13px;color:var(--mute)} .note.bad{color:var(--bad)}
+.stages{display:flex;gap:0;border-bottom:1px solid var(--line);margin:0 0 20px;flex-wrap:wrap}
+.tab{padding:10px 14px;border:0;border-bottom:3px solid transparent;background:none;border-radius:0;color:var(--mute);cursor:pointer;font-weight:600}
+.tab[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .n{display:inline-block;min-width:20px;height:20px;line-height:20px;text-align:center;border-radius:10px;background:var(--line);color:var(--ink);font-size:12px;margin-right:6px}
+.tab[aria-selected=true] .n{background:var(--accent);color:#fff}
+.sep{width:18px}
+.banner{padding:14px 16px;border-radius:8px;margin-bottom:18px;border-left:5px solid var(--accent);background:var(--accent-soft)}
+.banner.warn{border-color:var(--warn);background:var(--warn-soft)} .banner.bad{border-color:var(--bad);background:var(--bad-soft)} .banner.ok{border-color:var(--ok);background:var(--ok-soft)}
+.banner h2{font-size:17px;margin-bottom:2px}
+dl.kv{display:grid;grid-template-columns:170px 1fr;gap:6px 16px;margin:0}
+dl.kv dt{color:var(--mute)} dl.kv dd{margin:0;overflow-wrap:anywhere}
+code,.mono{font-family:var(--mono);font-size:13px}
+pre.text{font:13px/1.55 var(--mono);background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:62vh;overflow:auto;margin:8px 0}
+.warnrow{padding:7px 10px;border-radius:6px;margin:5px 0;font-size:14px;background:var(--panel)}
+.warnrow.warning{background:var(--warn-soft)} .warnrow.error{background:var(--bad-soft)}
+.warnrow b{font-family:var(--mono);font-size:12px}
+h3{font-size:16px;margin:24px 0 8px}
+.lead{color:var(--mute);margin:0 0 14px;max-width:80ch}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin:6px 0 12px;background:#fff}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:var(--panel)} td.num{text-align:right;font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.chip{padding:2px 9px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:13px}
+.blk{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:7px 0;border-bottom:1px solid #eceff2}
+.blk .ty{font-size:12px;font-weight:700;padding-top:2px}
+.blk .ty small{display:block;font-weight:400;color:var(--mute)}
+.blk.gone .tx{color:var(--t-gone);text-decoration:line-through}
+.blk .why{font-size:12px;color:var(--bad);text-decoration:none;display:block;margin-top:2px}
+.ty.heading{color:var(--t-heading)} .ty.list_item{color:var(--t-list)} .ty.table{color:var(--t-table)} .ty.footnote{color:var(--t-foot)} .ty.header,.ty.footer,.ty.boilerplate{color:var(--t-gone)}
+.blk.heading .tx{font-weight:650}
+.diff{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 16px}
+.diff>div{background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:13px/1.5 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.diff .b{border-left:4px solid var(--bad)} .diff .a{border-left:4px solid var(--ok)}
+.diff small{display:block;font-family:var(--sans);color:var(--mute);margin-bottom:3px}
+.parent{border:1px solid var(--line);border-radius:8px;margin:0 0 16px;background:#fff}
+.parent>.ph{padding:10px 14px;background:var(--panel);border-radius:8px 8px 0 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.child{margin:10px 14px 10px 28px;border-left:3px solid var(--accent);padding:2px 0 2px 12px}
+.chunk.flat{border-left:3px solid var(--accent);padding:2px 0 2px 12px;margin:0 0 12px}
+.meta{font-size:12px;color:var(--mute);margin-bottom:3px;overflow-wrap:anywhere}
+.chunk .ct{font:13px/1.55 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.pill{display:inline-block;padding:0 7px;border-radius:9px;font-size:12px;background:var(--accent-soft);color:var(--accent);margin-right:4px}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+details.c{border-bottom:1px solid var(--line);padding:2px 0}
+details.c>summary{cursor:pointer;padding:10px 0;font-weight:650;list-style:none;display:flex;gap:10px;justify-content:space-between;align-items:baseline}
+details.c>summary::-webkit-details-marker{display:none}
+details.c>summary .hl{font-weight:400;color:var(--mute);font-size:13px;text-align:right}
+.ev{background:var(--accent-soft);border-radius:8px;padding:10px 14px;margin:8px 0}
+.ev ul{margin:6px 0 0;padding-left:18px} .ev li{margin:2px 0;overflow-wrap:anywhere}
+.expl p{margin:6px 0;max-width:85ch} .expl ul{margin:6px 0;padding-left:20px;max-width:85ch}
+.grp{margin:28px 0 4px;font-size:18px}
+.empty{padding:60px 20px;text-align:center;color:var(--mute)}
+.empty h2{color:var(--ink);margin-bottom:6px}
+.tbl-html{overflow:auto;margin:4px 0}
+@media (max-width:900px){.app{grid-template-columns:1fr}aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:18px 16px}.diff{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.blk{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.banner{animation:in .25s ease-out}@keyframes in{from{opacity:.4}to{opacity:1}}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <h1 class="brand">Document ingestion lab</h1>
+  <p class="sub">Upload a file and watch it become clean, traceable chunks.</p>
+
+  <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a file">
+    <div id="dropText"><b>Drop a file here</b> or click to choose<br>PDF, Word (.docx), HTML, TXT, PNG/JPG</div>
+  </div>
+  <input type="file" id="file" hidden accept=".pdf,.docx,.html,.htm,.txt,.md,.png,.jpg,.jpeg,.tif,.tiff,.bmp,.webp">
+
+  <label for="source">Source name <span class="note">(identity of the document)</span></label>
+  <input type="text" id="source" placeholder="defaults to the file name">
+
+  <label for="strategy">Chunking strategy</label>
+  <select id="strategy">
+    <option value="structure">Structure-aware (parent-child)</option>
+    <option value="fixed">Fixed token windows</option>
+    <option value="semantic">Semantic boundaries</option>
+  </select>
+  <div class="row">
+    <div><label for="maxTokens">Max tokens</label><input type="number" id="maxTokens" value="200" min="20" max="2000"></div>
+    <div><label for="overlap">Overlap</label><input type="number" id="overlap" value="30" min="0" max="500"></div>
+  </div>
+  <label for="lang">OCR language</label>
+  <select id="lang"><option value="eng">eng</option></select>
+  <div id="ocrNote" class="note"></div>
+  <label class="chk"><input type="checkbox" id="save" checked> Save to library (source tracking)</label>
+  <button class="primary" id="run">Process document</button>
+  <div id="status" class="note" style="margin-top:8px" role="status"></div>
+
+  <hr>
+  <label for="sample">No file handy? Try a sample</label>
+  <select id="sample"></select>
+  <button id="runSample" style="margin-top:8px;width:100%">Process sample</button>
+  <p class="note">Tip: run <i>Handbook v1</i>, then <i>Handbook v2</i> to see versioning and incremental re-indexing.</p>
+</aside>
+
+<main>
+  <div class="stages" role="tablist" id="tabs"></div>
+  <div id="view"><div class="empty"><h2>Nothing processed yet</h2><p>Choose a file or a sample on the left, then press Process document.</p></div></div>
+</main>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const vis = s => esc(s).replace(/\u00ad/g,'<b title="soft hyphen">¬</b>').replace(/\u200b/g,'<b title="zero-width space">∅</b>').replace(/\u00a0/g,'<b title="non-breaking space">␣</b>').replace(/\ufeff/g,'<b title="BOM">∅</b>').replace(/\n/g,'↵\n');
+const TABS = [["source","1","Source & versioning"],["raw","2","Raw text"],["parse","3","Parsed structure"],["norm","4","Normalized text"],["chunks","5","Chunks"],["eng","","Document engineering"],["lib","","Library"]];
+let result = null, concepts = [], tab = "source", chosen = null;
+
+function renderTabs(){
+  $("#tabs").innerHTML = TABS.map(([id,n,label],i)=>`${i===5?'<span class="sep"></span>':''}<button class="tab" role="tab" aria-selected="${tab===id}" data-t="${id}">${n?`<span class="n">${n}</span>`:''}${label}</button>`).join("");
+  document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.t;renderTabs();renderView()});
+}
+async function api(url,opt){const r=await fetch(url,opt);const j=await r.json();if(!r.ok)throw new Error(j.error||r.statusText);return j}
+function formData(){
+  const f=new FormData();
+  f.append("strategy",$("#strategy").value);f.append("max_tokens",$("#maxTokens").value);f.append("overlap",$("#overlap").value);
+  f.append("ocr_lang",$("#lang").value);f.append("save",$("#save").checked?"1":"0");
+  if($("#source").value.trim())f.append("source_name",$("#source").value.trim());
+  return f;
+}
+async function process(fd,url){
+  $("#run").disabled=$("#runSample").disabled=true;$("#status").textContent="Processing...";
+  try{result=await api(url,{method:"POST",body:fd});tab="source";$("#status").textContent="Done in "+Object.values(result.timings_ms).reduce((a,b)=>a+b,0).toFixed(0)+" ms.";renderTabs();renderView()}
+  catch(e){$("#status").innerHTML='<span class="note bad">'+esc(e.message)+'</span>'}
+  $("#run").disabled=$("#runSample").disabled=false;
+}
+$("#run").onclick=()=>{if(!chosen){$("#status").innerHTML='<span class="note bad">Choose a file first, or use a sample.</span>';return}const f=formData();f.append("file",chosen);process(f,"/api/ingest")};
+$("#runSample").onclick=()=>{const f=formData();f.append("sample",$("#sample").value);process(f,"/api/ingest-sample")};
+const drop=$("#drop"),fileIn=$("#file");
+function pick(f){chosen=f;$("#dropText").innerHTML="<b>"+esc(f.name)+"</b><br>"+(f.size/1024).toFixed(1)+" KB - click to change"}
+drop.onclick=()=>fileIn.click();drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();fileIn.click()}};
+fileIn.onchange=()=>fileIn.files[0]&&pick(fileIn.files[0]);
+drop.ondragover=e=>{e.preventDefault();drop.classList.add("over")};drop.ondragleave=()=>drop.classList.remove("over");
+drop.ondrop=e=>{e.preventDefault();drop.classList.remove("over");if(e.dataTransfer.files[0])pick(e.dataTransfer.files[0])};
+
+function renderView(){
+  const v=$("#view");
+  if(tab==="eng"){v.innerHTML=viewEng();return}
+  if(tab==="lib"){loadLibrary();return}
+  if(!result){v.innerHTML='<div class="empty"><h2>Nothing processed yet</h2><p>Choose a file or a sample on the left, then press Process document.</p></div>';return}
+  v.innerHTML=({source:viewSource,raw:viewRaw,parse:viewParse,norm:viewNorm,chunks:viewChunks})[tab]();
+  v.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>navigator.clipboard.writeText(b.dataset.copy));
+}
+
+// ---------------------------------------------------------------- 1 source
+const STATUS={
+ new:["ok","New document","First time this source name was seen."],
+ updated:["ok","Updated document","Same source name, but the file changed. A new version was created."],
+ unchanged:["","Unchanged","Same file and same settings as the saved version. Nothing to re-index."],
+ reprocessed:["","Re-processed","Same file, different chunk settings. A new version was created."],
+ duplicate:["warn","Duplicate file","These exact bytes already exist under another source name. Not indexed again."],
+ failed:["bad","Could not process","Nothing usable could be extracted. Nothing was indexed; any earlier version stays active."],
+ preview:["","Preview","Nothing was saved."]};
+function viewSource(){
+  const s=result.source,[cls,title,msg]=STATUS[s.status]||["","",""];
+  const saved=s.saved?"Saved to the library.":(s.status==="failed"||s.status==="duplicate"&&!s.saved?"":"Not saved (Save to library is off).");
+  const warns=result.stages.parse.warnings;
+  const diff=result.stages.store.diff;
+  return `<div class="banner ${cls}"><h2>${esc(title)}${s.version?` - version ${s.version}`:""}</h2>${esc(msg)}${s.duplicate_of?` Original: <b>${esc(s.duplicate_of)}</b>.`:""} ${esc(saved)}</div>
+  <dl class="kv">
+   <dt>Document ID</dt><dd><code>${esc(s.doc_id)}</code> (from source name <b>${esc(s.source_name)}</b>)</dd>
+   <dt>File type / parser</dt><dd>${esc(s.file_type)} / ${esc(s.parser)}</dd>
+   <dt>Size</dt><dd>${(s.size_bytes/1024).toFixed(1)} KB</dd>
+   <dt>File hash (bytes)</dt><dd><code>${esc(s.file_hash.slice(0,24))}...</code></dd>
+   <dt>Text hash (normalized)</dt><dd><code>${esc(s.text_hash.slice(0,24))}...</code></dd>
+   ${s.previous_version?`<dt>Previous version ${s.previous_version}</dt><dd>file <code>${esc((s.previous_file_hash||"").slice(0,12))}</code> / text <code>${esc((s.previous_text_hash||"").slice(0,12))}</code></dd>`:""}
+   <dt>Document metadata</dt><dd>${Object.entries(s.doc_meta).filter(([k,v])=>v!==""&&v!==null&&!(Array.isArray(v)&&!v.length)).map(([k,v])=>`${esc(k)}: ${esc(Array.isArray(v)?v.join(", "):v)}`).join("; ")||"none found"}</dd>
+   <dt>Stage timings</dt><dd>${Object.entries(result.timings_ms).map(([k,v])=>`${k} ${v} ms`).join(", ")}</dd>
+  </dl>
+  ${diff?`<h3>Incremental re-index plan</h3><p class="lead">${esc(result.evidence.reindex.headline)}. ${esc(result.evidence.reindex.items[0])}</p>`:""}
+  <h3>Warnings and notes from parsing (${warns.length})</h3>
+  ${warns.length?warns.map(w=>`<div class="warnrow ${w.level}"><b>${esc(w.code)}</b>${w.page?` page ${w.page}`:""} - ${esc(w.message)}</div>`).join(""):'<p class="lead">No warnings.</p>'}`;
+}
+
+// ---------------------------------------------------------------- 2 raw
+function viewRaw(){
+  const r=result.stages.raw;
+  return `<h3 style="margin-top:0">Raw text <span class="note">${r.chars.toLocaleString()} characters</span></h3>
+  <p class="lead">This is what a naive one-liner gives you (<code>extract_text()</code>, <code>get_text()</code>, or plain OCR). Look for: running headers repeated on every page, page numbers glued in, tables flattened or missing, menus and cookie banners from web pages, <code>(cid:127)</code> glyphs, words split by hyphens.</p>
+  <pre class="text">${vis(r.text)||"(empty)"}</pre>`;
+}
+
+// ---------------------------------------------------------------- 3 parse
+function blockHtml(b){
+  const gone=!!b.removed_reason;
+  let body;
+  if(b.type==="table"&&b.meta.rows){body=`<div class="tbl-html"><table class="t">${b.meta.rows.map((r,i)=>`<tr>${r.map(c=>i?`<td>${esc(c)}</td>`:`<th>${esc(c)}</th>`).join("")}</tr>`).join("")}</table></div>`}
+  else body=esc(b.text).replace(/\n/g,"<br>");
+  const extra=[];
+  if(b.meta.confidence!=null)extra.push("OCR confidence "+b.meta.confidence+"%");
+  if(b.meta.merged_across_pages)extra.push("merged across pages "+b.meta.merged_across_pages.join("→"));
+  if(b.meta.merged_cells)extra.push(b.meta.merged_cells+" merged cell(s)");
+  if(b.meta.caption)extra.push("caption: "+b.meta.caption);
+  return `<div class="blk ${esc(b.type)} ${gone?"gone":""}"><div class="ty ${esc(b.type)}">${esc(b.type.replace("_"," "))}${b.type==="heading"?` L${b.level}`:""}<small>#${b.idx}${b.page?` · p.${b.page}`:""}</small></div>
+  <div><div class="tx" style="${b.type==="heading"?`margin-left:${Math.max(0,b.level-1)*14}px`:""}">${body}</div>${gone?`<span class="why">removed: ${esc(b.removed_reason)}</span>`:""}${extra.length?`<div class="meta">${esc(extra.join(" · "))}</div>`:""}</div></div>`;
+}
+function viewParse(){
+  const p=result.stages.parse;
+  return `<h3 style="margin-top:0">Parsed structure</h3>
+  <p class="lead">The parser turns the file into typed blocks: headings with levels, paragraphs, lists, tables, footnotes. Struck-through blocks were recognised as noise (running headers/footers, page numbers, web boilerplate) and are kept here only for auditing.</p>
+  <div class="chips">${Object.entries(p.counts).map(([k,v])=>`<span class="chip">${esc(k.replace("_"," "))}: ${v}</span>`).join("")}</div>
+  ${p.blocks.length?p.blocks.map(blockHtml).join(""):'<p class="lead">No blocks were produced.</p>'}`;
+}
+
+// ---------------------------------------------------------------- 4 normalize
+function viewNorm(){
+  const n=result.stages.normalize,changed=n.blocks.filter(b=>b.meta.before!==undefined);
+  const removed=n.blocks.filter(b=>b.removed_reason&&!["header","footer","boilerplate"].includes(b.type));
+  return `<h3 style="margin-top:0">Normalization rules</h3>
+  <p class="lead">Each rule runs in this order on every block. The table shows how many blocks each rule actually changed for this document.</p>
+  <table class="t"><tr><th>Rule</th><th>What it does</th><th>Blocks changed</th></tr>${n.rules.map(r=>`<tr><td><code>${esc(r.rule)}</code></td><td>${esc(r.description)}</td><td class="num">${r.blocks_changed}</td></tr>`).join("")}</table>
+  <h3>Before and after (${changed.length} changed block${changed.length===1?"":"s"})</h3>
+  <p class="lead">Invisible characters are made visible: ↵ line break, ¬ soft hyphen, ∅ zero-width space, ␣ non-breaking space.</p>
+  ${changed.slice(0,40).map(b=>`<div class="meta">block #${b.idx} · ${esc(b.type)} · rules: ${esc(b.meta.rules.join(", "))}</div><div class="diff"><div class="b"><small>before</small>${vis(b.meta.before)}</div><div class="a"><small>after</small>${vis(b.text)}</div></div>`).join("")||'<p class="lead">The text was already clean.</p>'}
+  ${removed.length?`<h3>Removed as duplicates or noise</h3>${removed.map(b=>`<div class="warnrow"><b>#${b.idx}</b> ${esc(b.removed_reason)}: ${esc(b.text.slice(0,120))}</div>`).join("")}`:""}
+  <h3>Final plain text <span class="note">${n.plain_text.length.toLocaleString()} characters, headers/footers/duplicates removed</span></h3>
+  <pre class="text">${esc(n.plain_text)||"(empty)"}</pre>`;
+}
+
+// ---------------------------------------------------------------- 5 chunks
+function chunkMeta(c){
+  const bits=[`<code>${esc(c.chunk_id)}</code>`,`${c.tokens} tokens`];
+  if(c.page_start)bits.push(c.page_start===c.page_end?`p.${c.page_start}`:`pp.${c.page_start}-${c.page_end}`);
+  if(c.meta.overlap_tokens)bits.push(`<span class="pill">overlap ${c.meta.overlap_tokens} tokens</span>`);
+  if(c.meta.table_part)bits.push(`<span class="pill">table part ${esc(c.meta.table_part)}</span>`);
+  if(c.meta.footnotes)bits.push('<span class="pill">footnotes</span>');
+  if(c.meta.boundary_similarity!==undefined)bits.push(`<span class="pill">cut where similarity = ${c.meta.boundary_similarity}</span>`);
+  return bits.join(" · ");
+}
+function viewChunks(){
+  const c=result.stages.chunks,items=c.items;
+  if(!items.length)return '<p class="lead">No chunks: the document could not be parsed.</p>';
+  const comp=Object.entries(c.comparison);
+  const near=result.stages.dedup.near;
+  let html=`<h3 style="margin-top:0">Strategy comparison on this document</h3>
+  <p class="lead">Same blocks, three ways of cutting them. "Cut mid-sentence" counts chunks that end in the middle of a sentence. Highlighted row = the strategy you selected.</p>
+  <table class="t"><tr><th>Strategy</th><th>Chunks</th><th>Parents</th><th>Tokens min / avg / max</th><th>Cut mid-sentence</th><th>Split tables</th></tr>
+  ${comp.map(([k,v])=>`<tr ${k===c.strategy?'style="background:var(--accent-soft)"':""}><td>${esc(v.label)}</td><td class="num">${v.retrievable}</td><td class="num">${v.parents}</td><td class="num">${v.min_tokens} / ${v.avg_tokens} / ${v.max_tokens}</td><td class="num">${v.cut_mid_sentence}</td><td class="num">${v.split_tables}</td></tr>`).join("")}</table>`;
+  if(near.length)html+=`<h3>Near-duplicate chunks</h3>${near.map(p=>`<div class="warnrow warning"><b>${p.similarity}</b> ${esc(p.scope)} - ${esc(p.preview)}</div>`).join("")}`;
+  html+=`<h3>Chunks (${esc(c.strategy)})</h3>`;
+  if(c.strategy==="structure"){
+    const parents=items.filter(x=>x.kind==="parent");
+    html+=`<p class="lead">Each parent is a whole section (stored, not embedded). Its children are the small chunks you would embed and search. Every chunk carries its own source and citation.</p>`;
+    html+=parents.map(p=>{const kids=items.filter(x=>x.parent_id===p.chunk_id);
+      return `<div class="parent"><div class="ph"><div><b>${esc(p.section_path.join(" › ")||"(no heading)")}</b></div><div class="meta" style="margin:0">parent · ${chunkMeta(p)}</div></div>
+      <details style="margin:0 14px 6px"><summary class="note" style="cursor:pointer;padding:8px 0">Show full parent text</summary><div class="chunk"><div class="ct">${esc(p.text)}</div></div></details>
+      ${kids.map(k=>`<div class="child"><div class="meta">child · ${chunkMeta(k)}<br>citation: ${esc(k.citation)}</div><div class="chunk"><div class="ct">${esc(k.text)}</div></div></div>`).join("")}</div>`}).join("");
+  } else {
+    html+=`<p class="lead">${c.strategy==="fixed"?"Fixed windows ignore structure: watch for chunks that start or stop mid-sentence.":"Boundaries fall where neighbouring sentences share the fewest content words."}</p>`;
+    html+=items.map(k=>`<div class="chunk flat"><div class="meta">${chunkMeta(k)}<br>citation: ${esc(k.citation)}</div><div class="ct">${esc(k.text)}</div></div>`).join("");
+  }
+  return html;
+}
+
+// ---------------------------------------------------------------- engineering
+function para(text){
+  const out=[];let list=[];
+  const flush=()=>{if(list.length){out.push("<ul>"+list.map(x=>`<li>${esc(x)}</li>`).join("")+"</ul>");list=[]}};
+  text.split("\n").forEach(l=>{if(l.startsWith("- "))list.push(l.slice(2));else{flush();out.push(`<p>${esc(l)}</p>`)}});
+  flush();return out.join("");
+}
+function viewEng(){
+  if(!concepts.length)return '<p class="lead">Loading...</p>';
+  const ev=result?result.evidence:null;let last="",html=`<h3 style="margin-top:0">Document engineering: how and why</h3>
+  <p class="lead">${ev?`Every topic below shows what happened to <b>${esc(result.source.source_name)}</b> in your last run.`:"Process a document first and each topic will show live results from it. The explanations are readable now."}</p>`;
+  concepts.forEach(c=>{
+    if(c.group!==last){html+=`<h2 class="grp">${esc(c.group)}</h2>`;last=c.group}
+    const e=ev&&ev[c.id];
+    html+=`<details class="c"><summary><span>${esc(c.title)}</span><span class="hl">${e?esc(e.headline):""}</span></summary>
+      ${e?`<div class="ev"><b>In this document:</b> ${esc(e.headline)}<ul>${e.items.map(i=>`<li>${esc(i)}</li>`).join("")}</ul></div>`:""}
+      <div class="expl">${para(c.text)}<p class="note">Code: ${esc(c.code)}</p></div></details>`;
+  });
+  return html;
+}
+
+// ---------------------------------------------------------------- library
+async function loadLibrary(){
+  const v=$("#view");v.innerHTML='<p class="lead">Loading...</p>';
+  const lib=await api("/api/library");
+  let html=`<h3 style="margin-top:0">Library <span class="note">everything saved by "Save to library"</span></h3>`;
+  if(!lib.documents.length&&!lib.aliases.length)html+='<div class="empty"><h2>The library is empty</h2><p>Process a document with Save to library switched on.</p></div>';
+  else{
+    html+=`<table class="t"><tr><th>Source name</th><th>Doc ID</th><th>Type</th><th>Version</th><th>Active chunks</th><th>Updated</th><th></th></tr>
+    ${lib.documents.map(d=>`<tr><td>${esc(d.source_name)}</td><td><code>${esc(d.doc_id)}</code></td><td>${esc(d.file_type)}</td><td class="num">${d.current_version} of ${d.n_versions}</td><td class="num">${d.n_chunks}</td><td>${esc(d.updated_at.replace("T"," ").slice(0,19))}</td><td><button class="link" data-doc="${esc(d.doc_id)}">Open</button></td></tr>`).join("")}</table>`;
+    if(lib.aliases.length)html+=`<h3>Duplicate files (aliases)</h3><table class="t"><tr><th>File name</th><th>Same bytes as</th></tr>${lib.aliases.map(a=>{const o=lib.documents.find(d=>d.doc_id===a.canonical_doc_id);return `<tr><td>${esc(a.source_name)}</td><td>${esc(o?o.source_name:a.canonical_doc_id)}</td></tr>`}).join("")}</table>`;
+  }
+  html+=`<div id="libDetail"></div><p style="margin-top:24px"><button id="reset">Delete everything in the library</button></p>`;
+  v.innerHTML=html;
+  v.querySelectorAll("[data-doc]").forEach(b=>b.onclick=()=>openDoc(b.dataset.doc));
+  $("#reset").onclick=async()=>{if(confirm("Delete all saved documents, versions and chunks?")){await api("/api/reset",{method:"POST"});loadLibrary()}};
+}
+async function openDoc(id){
+  const d=await api("/api/library/"+id),active=d.chunks.filter(c=>c.version_removed===null),gone=d.chunks.filter(c=>c.version_removed!==null);
+  const row=c=>`<tr><td><code>${esc(c.chunk_id)}</code></td><td>${esc(c.kind)}</td><td>${esc(c.section_path.join(" › "))}</td><td class="num">${c.tokens}</td><td class="num">v${c.version_added}${c.version_removed!==null?` → removed in v${c.version_removed}`:""}</td><td>${esc(c.text.slice(0,90))}</td></tr>`;
+  $("#libDetail").innerHTML=`<h3>${esc(d.document.source_name)} - version history</h3>
+  <table class="t"><tr><th>Version</th><th>Status</th><th>File hash</th><th>Text hash</th><th>Strategy</th><th>Ingested</th></tr>${d.versions.map(v=>`<tr><td class="num">${v.version}</td><td>${esc(v.status)}</td><td><code>${esc(v.file_hash.slice(0,10))}</code></td><td><code>${esc(v.text_hash.slice(0,10))}</code></td><td>${esc(v.strategy)}</td><td>${esc(v.ingested_at.replace("T"," ").slice(0,19))}</td></tr>`).join("")}</table>
+  <h3>Active chunks (${active.length})</h3><table class="t"><tr><th>Chunk ID</th><th>Kind</th><th>Section</th><th>Tokens</th><th>Added</th><th>Text</th></tr>${active.map(row).join("")}</table>
+  ${gone.length?`<h3>Retired chunks (${gone.length})</h3><p class="lead">Removed by a newer version. Their vectors would be deleted from the search index; the rows stay as history.</p><table class="t"><tr><th>Chunk ID</th><th>Kind</th><th>Section</th><th>Tokens</th><th>Lifetime</th><th>Text</th></tr>${gone.map(row).join("")}</table>`:""}`;
+  $("#libDetail").scrollIntoView({behavior:"smooth"});
+}
+
+// ---------------------------------------------------------------- start
+(async function init(){
+  renderTabs();
+  try{
+    const [samples,ocr]=await Promise.all([api("/api/samples"),api("/api/ocr")]);
+    $("#sample").innerHTML=samples.map(s=>`<option value="${esc(s.file)}">${esc(s.label)}</option>`).join("");
+    $("#lang").innerHTML=(ocr.languages.length?ocr.languages:["eng"]).map(l=>`<option>${esc(l)}</option>`).join("");
+    $("#ocrNote").innerHTML=ocr.available?"OCR engine ready.":'<span class="note bad">OCR unavailable: '+esc(ocr.reason)+"</span>";
+    concepts=await api("/api/concepts");
+  }catch(e){$("#status").textContent=e.message}
+})();
+</script>
+</body>
+</html>
