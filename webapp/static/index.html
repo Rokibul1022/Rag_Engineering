@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vector search lab</title>
+<style>
+:root{
+  --bg:#fafafa; --panel:#f1f2f6; --line:#d8dbe3; --ink:#1a1d29; --mute:#5c6275;
+  --accent:#3b4cca; --accent-soft:#e6e9fb; --ok:#17703a; --ok-soft:#ddf3e4; --warn:#98590a; --warn-soft:#fdf0d5; --bad:#a3262c; --bad-soft:#fde4e4;
+  --sparse:#b45309; --dense:#3b4cca; --hybrid:#15803d;
+  --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif; --mono:ui-monospace,"Cascadia Mono",Consolas,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans)}
+header{padding:18px 32px 0;border-bottom:1px solid var(--line);background:#fff}
+h1{font-size:21px;margin:0 0 2px;letter-spacing:-.01em} h2{font-size:18px;margin:26px 0 6px} h3{font-size:15.5px;margin:20px 0 6px}
+.sub{color:var(--mute);margin:0 0 12px;font-size:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.chip{padding:2px 10px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:12.5px;color:var(--mute)}
+.chip.ok{background:var(--ok-soft);border-color:#b5e0c4;color:var(--ok)} .chip.bad{background:var(--bad-soft);border-color:#f0b7ba;color:var(--bad)}
+nav{display:flex;flex-wrap:wrap}
+.tab{padding:10px 15px;border:0;border-bottom:3px solid transparent;background:none;color:var(--mute);cursor:pointer;font:600 14.5px var(--sans)}
+.tab[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .n{display:inline-block;min-width:20px;height:20px;line-height:20px;text-align:center;border-radius:10px;background:var(--line);color:var(--ink);font-size:12px;margin-right:6px}
+.tab[aria-selected=true] .n{background:var(--accent);color:#fff}
+main{padding:22px 32px 70px;max-width:1280px}
+button,select,input,textarea{font:inherit;color:inherit}
+button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:7px 13px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--accent)} button:disabled{opacity:.55;cursor:default}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.small{padding:3px 9px;font-size:13px}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select,input[type=text],input[type=number],textarea{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:#fff}
+textarea{width:100%;resize:vertical}
+label{font-size:13px;font-weight:600;color:var(--mute)}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin:10px 0}
+.row>div{display:flex;flex-direction:column;gap:4px}
+.lead{color:var(--mute);margin:0 0 12px;max-width:90ch}
+.note{font-size:13px;color:var(--mute)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0 14px;background:#fff}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+table.t th{background:var(--panel);font-weight:600} td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.scroll{overflow:auto;max-height:420px;border:1px solid var(--line);border-radius:6px;background:#fff} .scroll table.t{margin:0}
+.scroll th{position:sticky;top:0}
+code,.mono{font:13px var(--mono)}
+.banner{padding:12px 15px;border-radius:8px;margin:12px 0;border-left:5px solid var(--accent);background:var(--accent-soft)}
+.banner.ok{border-color:var(--ok);background:var(--ok-soft)} .banner.warn{border-color:var(--warn);background:var(--warn-soft)} .banner.bad{border-color:var(--bad);background:var(--bad-soft)}
+.card{border:1px solid var(--line);border-radius:8px;background:#fff;padding:12px 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;margin:10px 0}
+.badge{display:inline-block;padding:0 8px;border-radius:9px;font-size:12px;font-weight:600;background:var(--panel);color:var(--mute)}
+.badge.sparse{background:#fdeedc;color:var(--sparse)} .badge.dense{background:var(--accent-soft);color:var(--dense)} .badge.hybrid{background:var(--ok-soft);color:var(--hybrid)}
+.badge.ready{background:var(--ok-soft);color:var(--ok)} .badge.needs_download,.badge.needs_install{background:var(--warn-soft);color:var(--warn)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:70px}.bar>i{display:block;height:100%;background:var(--accent)}
+.prog{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin:6px 0} .prog>i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.heat td.c{text-align:center;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:0 7px;border-radius:9px;font-size:12px;background:var(--warn-soft);color:var(--warn)}
+.pill.t{background:var(--panel);color:var(--mute)}
+details.c{border-bottom:1px solid var(--line)} details.c>summary{cursor:pointer;padding:10px 0;font-weight:650;list-style:none;display:flex;gap:12px;justify-content:space-between;align-items:baseline}
+details.c>summary::-webkit-details-marker{display:none} details.c>summary .hl{font-weight:400;color:var(--mute);font-size:13px;text-align:right}
+.ev{background:var(--accent-soft);border-radius:8px;padding:10px 14px;margin:6px 0 10px} .ev ul{margin:6px 0 0;padding-left:18px} .ev li{margin:2px 0;overflow-wrap:anywhere}
+.expl p{margin:6px 0;max-width:88ch} .expl ul{margin:6px 0;padding-left:20px;max-width:88ch}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin:4px 0}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.stack{display:flex;height:26px;border-radius:6px;overflow:hidden;margin:8px 0;font-size:12.5px;color:#fff}
+.stack div{display:flex;align-items:center;justify-content:center;white-space:nowrap}
+svg text{font-family:var(--sans)}
+.hit{background:var(--ok-soft);color:var(--ok);font-weight:600} .miss{background:var(--bad-soft);color:var(--bad)}
+.empty{padding:40px;text-align:center;color:var(--mute)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:900px){.two{grid-template-columns:1fr}main,header{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Vector search lab</h1>
+  <p class="sub">Embeddings, cosine similarity, dense vs sparse retrieval, ANN indexes (HNSW, IVF, PQ) and a vector database, measured on a labeled dataset.</p>
+  <div class="chips" id="chips"></div>
+  <nav id="tabs" role="tablist"></nav>
+</header>
+<main id="view"></main>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const f2=x=>x==null?"-":Number(x).toFixed(2), f3=x=>x==null?"-":Number(x).toFixed(3), pct=x=>x==null?"-":Math.round(x*100)+"%";
+const mb=b=>b>=1e6?(b/1e6).toFixed(1)+" MB":(b/1e3).toFixed(0)+" KB";
+const TABS=[["data","1","Dataset"],["emb","2","Embeddings"],["cmp","3","Compare retrievers"],["ann","4","ANN indexes"],["vdb","5","Vector DB"],["con","6","Concepts"]];
+let tab="data", S={status:null,ds:null,models:[],methods:[],cmp:null,ann:null,flt:null,vdb:null,mapModel:null,sel:null,qFilter:"all",qSearch:"",job:{}};
+const PALETTE=["#3b4cca","#c2410c","#15803d","#a21caf","#0e7490","#b45309","#be123c","#4d7c0f","#6d28d9","#475569"];
+
+async function api(url,opt){const r=await fetch(url,opt);let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.error||r.statusText);return j}
+const post=(url,body)=>api(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body||{})});
+async function runJob(startUrl,body,onProgress){
+  const {job}=await post(startUrl,body);
+  for(;;){
+    const j=await api("/api/jobs/"+job);
+    onProgress&&onProgress(j);
+    if(j.state==="done")return j.result; if(j.state==="error")throw new Error(j.error);
+    await new Promise(r=>setTimeout(r,350));
+  }
+}
+function progressBar(id){return `<div id="${id}" class="note"></div>`}
+function setProg(id,j){const e=$("#"+id);if(e)e.innerHTML=`${esc(j.message)}<div class="prog"><i style="width:${Math.round(j.progress*100)}%"></i></div>`}
+function clearProg(id,msg){const e=$("#"+id);if(e)e.innerHTML=msg||""}
+function errBox(id,e){const x=$("#"+id);if(x)x.innerHTML=`<div class="banner bad">${esc(e.message||e)}</div>`}
+
+function renderTabs(){
+  $("#tabs").innerHTML=TABS.map(([id,n,l])=>`<button class="tab" role="tab" aria-selected="${tab===id}" data-t="${id}"><span class="n">${n}</span>${l}</button>`).join("");
+  $$(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.t;renderTabs();render()});
+}
+function renderChips(){
+  const s=S.status;if(!s)return;
+  $("#chips").innerHTML=`<span class="chip">dataset: ${esc(s.dataset.name)} · ${s.dataset.n_docs} passages · ${s.dataset.n_queries} queries</span>
+   <span class="chip ${s.faiss.available?"ok":"bad"}">FAISS ${s.faiss.available?esc(s.faiss.version):"missing: pip install faiss-cpu"}</span>
+   <span class="chip">${S.models.filter(m=>m.state==="ready").length} of ${S.models.length} embedding models ready</span>`;
+}
+function render(){({data:vData,emb:vEmb,cmp:vCmp,ann:vAnn,vdb:vVdb,con:vCon})[tab]()}
+
+// ================================================================= charts (hand-written SVG)
+function lineChart({series,xlog=true,xLabel,yLabel,width=820,height=380,yMin=0,yMax=1}){
+  const m={l:56,r:16,t:14,b:46},W=width-m.l-m.r,H=height-m.t-m.b;
+  const xs=series.flatMap(s=>s.points.map(p=>p.x)).filter(v=>v>0);if(!xs.length)return"";
+  let x0=Math.min(...xs),x1=Math.max(...xs);
+  const lx=v=>xlog?Math.log10(v):v;x0=lx(x0)-(xlog?.05:0);x1=lx(x1)+(xlog?.05:0);
+  const X=v=>m.l+(lx(v)-x0)/(x1-x0)*W,Y=v=>m.t+(1-(v-yMin)/(yMax-yMin))*H;
+  let g="";
+  for(let i=0;i<=5;i++){const v=yMin+(yMax-yMin)*i/5;g+=`<line x1="${m.l}" x2="${m.l+W}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e4e6ee"/><text x="${m.l-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="#5c6275">${(v*100).toFixed(0)}%</text>`}
+  const ticks=[];for(let e=Math.floor(x0);e<=Math.ceil(x1);e++)[1,2,5].forEach(k=>{const v=k*Math.pow(10,e);if(lx(v)>=x0&&lx(v)<=x1)ticks.push(v)});
+  ticks.forEach(v=>{g+=`<line x1="${X(v)}" x2="${X(v)}" y1="${m.t}" y2="${m.t+H}" stroke="#eef0f5"/><text x="${X(v)}" y="${m.t+H+16}" text-anchor="middle" font-size="11" fill="#5c6275">${v>=1?v:v.toString()}</text>`});
+  series.forEach(s=>{
+    const pts=s.points.slice().sort((a,b)=>a.x-b.x);
+    g+=`<polyline fill="none" stroke="${s.color}" stroke-width="2" ${s.dash?'stroke-dasharray="5 4"':""} points="${pts.map(p=>X(p.x)+","+Y(p.y)).join(" ")}"/>`;
+    pts.forEach(p=>g+=`<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="3.6" fill="${s.color}"><title>${esc(s.name)} ${esc(p.label||"")}: recall ${(p.y*100).toFixed(1)}%, ${p.x} ms</title></circle>`);
+  });
+  g+=`<text x="${m.l+W/2}" y="${height-6}" text-anchor="middle" font-size="12" fill="#1a1d29">${esc(xLabel)}</text><text transform="translate(14,${m.t+H/2}) rotate(-90)" text-anchor="middle" font-size="12" fill="#1a1d29">${esc(yLabel)}</text>`;
+  return `<svg viewBox="0 0 ${width} ${height}" width="100%" role="img" aria-label="${esc(yLabel)} versus ${esc(xLabel)}">${g}</svg>`;
+}
+function scatter(points,{color,size=5,width=820,height=470}){
+  const xs=points.map(p=>p.x),ys=points.map(p=>p.y),pad=.04;
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),dx=(x1-x0)||1,dy=(y1-y0)||1;
+  const X=v=>20+(v-x0+pad*dx)/(dx*(1+2*pad))*(width-40),Y=v=>height-20-(v-y0+pad*dy)/(dy*(1+2*pad))*(height-40);
+  const body=points.map(p=>p.q?`<path d="M${X(p.x)} ${Y(p.y)-6}l6 6l-6 6l-6-6z" fill="${color(p)}" fill-opacity=".85" stroke="#fff"><title>${esc(p.label)}</title></path>`
+    :`<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="${size}" fill="${color(p)}" fill-opacity=".8" stroke="#fff"><title>${esc(p.label)}</title></circle>`).join("");
+  return `<svg viewBox="0 0 ${width} ${height}" width="100%" style="background:#fff;border:1px solid var(--line);border-radius:8px" role="img" aria-label="2D map of the embedded passages">${body}</svg>`;
+}
+const heat=(v,lo=0,hi=1)=>{const t=Math.max(0,Math.min(1,(v-lo)/(hi-lo)));const r=Math.round(253-t*(253-170)),g=Math.round(228+t*(236-228)),b=Math.round(228-t*(228-190));return `rgb(${r},${g},${b})`};
+
+// ================================================================= 1 dataset
+async function vData(){
+  const v=$("#view");v.innerHTML='<p class="lead">Loading...</p>';
+  S.ds=await api("/api/dataset");const d=S.ds;
+  const types=Object.entries(d.types),TYPE_HELP={keyword:"shares distinctive words with the answer passage. Sparse retrieval should win.",paraphrase:"same meaning, almost no shared words. Dense retrieval should win, BM25 cannot.",question:"a natural-language question. Mixed.",typo:"key words misspelled. Exact word matching breaks.",identifier:"an exact code, model number or name. Dense vectors blur near-identical passages.",other:"unlabeled type"};
+  const rows=d.queries.filter(q=>(S.qFilter==="all"||q.type===S.qFilter)&&(!S.qSearch||q.query.toLowerCase().includes(S.qSearch.toLowerCase())));
+  const title=Object.fromEntries(d.corpus.map(x=>[x.id,x.title||x.text.slice(0,40)]));
+  v.innerHTML=`<h2 style="margin-top:0">A labeled dataset: ${esc(d.name)}</h2>
+  <p class="lead">Evaluating retrieval needs questions whose correct answer passage is KNOWN. Each query below is labeled with the passage that answers it and with a <b>query type</b>. The types matter more than the overall average, because they expose how each retriever fails.</p>
+  <div class="row"><span class="chip">${d.n_docs} passages</span><span class="chip">${d.n_queries} queries</span>${Object.entries(d.domains).map(([k,n])=>`<span class="chip">${esc(k)}: ${n}</span>`).join("")}</div>
+  <table class="t"><tr><th>Query type</th><th class="num">Queries</th><th>What it tests</th><th class="num">Mean word overlap with the answer</th></tr>
+  ${types.map(([t,n])=>{const ov=d.queries.filter(q=>q.type===t&&q.lexical_overlap!=null).map(q=>q.lexical_overlap);return `<tr><td><b>${esc(t)}</b></td><td class="num">${n}</td><td>${esc(TYPE_HELP[t]||"")}</td><td class="num">${ov.length?f2(ov.reduce((a,b)=>a+b,0)/ov.length):"-"}</td></tr>`}).join("")}</table>
+  <p class="note">Word overlap proves the labels are honest: paraphrase queries share only a few percent of their words with the answer, keyword queries nearly all.</p>
+  <h3>Use your own dataset</h3>
+  <p class="lead">Upload two JSON Lines files. <code>corpus.jsonl</code>: one object per line with <code>id</code>, <code>text</code> (optional <code>title</code>, <code>domain</code>). <code>queries.jsonl</code>: <code>id</code>, <code>query</code>, <code>relevant</code> (list of corpus ids), optional <code>type</code>. <a href="/api/dataset/download/corpus">Download the built-in corpus</a> · <a href="/api/dataset/download/queries">queries</a> as examples.</p>
+  <div class="row"><div><label for="upC">corpus.jsonl</label><input type="file" id="upC" accept=".jsonl,.json,.txt"></div><div><label for="upQ">queries.jsonl</label><input type="file" id="upQ" accept=".jsonl,.json,.txt"></div>
+  <button id="upGo">Use these files</button><button id="upReset">Back to the built-in dataset</button></div><div id="upMsg"></div>
+  <h3>Queries</h3>
+  <div class="row"><div><label for="qf">Type</label><select id="qf"><option value="all">all</option>${types.map(([t])=>`<option ${S.qFilter===t?"selected":""}>${esc(t)}</option>`).join("")}</select></div>
+  <div><label for="qs">Search</label><input type="text" id="qs" value="${esc(S.qSearch)}" placeholder="filter queries"></div><span class="note">${rows.length} shown</span></div>
+  <div class="scroll"><table class="t"><tr><th>Id</th><th>Type</th><th>Query</th><th>Answer passage</th></tr>${rows.map(q=>`<tr><td class="mono">${esc(q.id)}</td><td><span class="pill t">${esc(q.type)}</span></td><td>${esc(q.query)}</td><td>${esc(title[q.relevant[0]])}</td></tr>`).join("")}</table></div>
+  <details style="margin-top:14px"><summary class="note" style="cursor:pointer">Show all ${d.n_docs} passages</summary><div class="scroll"><table class="t"><tr><th>Id</th><th>Domain</th><th>Title</th><th>Text</th></tr>${d.corpus.map(x=>`<tr><td class="mono">${esc(x.id)}</td><td>${esc(x.domain)}</td><td>${esc(x.title)}</td><td>${esc(x.text)}</td></tr>`).join("")}</table></div></details>`;
+  $("#qf").onchange=e=>{S.qFilter=e.target.value;vData()};$("#qs").oninput=e=>{S.qSearch=e.target.value;clearTimeout(S._t);S._t=setTimeout(()=>{vData().then(()=>{const q=$("#qs");q.focus();q.setSelectionRange(q.value.length,q.value.length)})},250)};
+  $("#upGo").onclick=async()=>{const c=$("#upC").files[0],q=$("#upQ").files[0];if(!c||!q){$("#upMsg").innerHTML='<div class="banner warn">Choose both files.</div>';return}
+    const fd=new FormData();fd.append("corpus",c);fd.append("queries",q);
+    try{await api("/api/dataset/upload",{method:"POST",body:fd});S.cmp=null;await refreshStatus();vData()}catch(e){errBox("upMsg",e)}};
+  $("#upReset").onclick=async()=>{await post("/api/dataset/reset");S.cmp=null;await refreshStatus();vData()};
+}
+
+// ================================================================= 2 embeddings
+function vEmb(){
+  const v=$("#view");
+  const cards=S.models.map(m=>`<div class="card"><div class="row" style="margin:0 0 4px;justify-content:space-between"><b>${esc(m.label)}</b><span class="badge ${m.state}">${esc(m.state.replace("_"," "))}</span></div>
+   <span class="badge">${esc(m.kind)}</span> ${m.dim?`<span class="badge">${m.dim} dims</span>`:""}
+   <p class="note" style="margin:6px 0">${esc(m.description)}</p>
+   ${m.state==="needs_download"?`<button class="small" data-prep="${esc(m.id)}">Download / load</button>`:""}${m.state==="needs_install"?`<code>${esc(m.note)}</code>`:""}${m.note&&m.state==="ready"?`<span class="note">${esc(m.note)}</span>`:""}
+   <div id="prog-${esc(m.id)}"></div></div>`).join("");
+  const ready=S.models.filter(m=>m.state==="ready");
+  const PRESETS=[["a car","an automobile","synonyms"],["river bank","bank account","one word, two meanings"],["I love this phone","I do not love this phone","negation"],["error E4012","error E4013","near-identical codes"],["How many vacation days do I get?","annual leave per year","question vs passage"],["the cat sat on the mat","stock markets fell sharply","unrelated"]];
+  v.innerHTML=`<h2 style="margin-top:0">Embedding models</h2>
+  <p class="lead">An embedding model maps text to a vector. Offline models work immediately; GloVe downloads 69 MB from GitHub once; neural models need <code>pip install sentence-transformers</code> and download weights from Hugging Face on first use.</p>
+  <div class="cards">${cards}</div>
+  <h2>Similarity playground</h2>
+  <p class="lead">Type two texts and see how every ready model scores them. <b>cosine</b> = angle between the vectors. <b>dot (raw)</b> and <b>L2 (raw)</b> use the vectors BEFORE normalization: notice they can disagree with cosine, because vector length leaks in.</p>
+  <div class="row" style="align-items:stretch"><div style="flex:1;min-width:260px"><label for="sa">Text A</label><input type="text" id="sa" value="a car"></div><div style="flex:1;min-width:260px"><label for="sb">Text B</label><input type="text" id="sb" value="an automobile"></div><div style="justify-content:flex-end"><button class="primary" id="simGo">Compare</button></div></div>
+  <div class="row" style="margin-top:0">${PRESETS.map((p,i)=>`<button class="small" data-pre="${i}" title="${esc(p[2])}">${esc(p[2])}</button>`).join("")}</div>
+  <div id="simOut"></div>
+  <h2>Embedding map</h2>
+  <p class="lead">Every passage embedded, then squashed to 2 dimensions with PCA. Passages on the same topic should cluster; the diamonds are the first 60 queries, embedded by the same model. A query far from its answer is a retrieval miss waiting to happen.</p>
+  <div class="row"><div><label for="mapModel">Model</label><select id="mapModel">${ready.map(m=>`<option value="${esc(m.id)}" ${S.mapModel===m.id?"selected":""}>${esc(m.label)}</option>`).join("")}</select></div><button id="mapGo" class="primary">Draw map</button><label style="font-weight:400"><input type="checkbox" id="mapQ"> show queries</label></div>
+  <div id="mapOut"></div>`;
+  $$("[data-prep]").forEach(b=>b.onclick=async()=>{b.disabled=true;const id=b.dataset.prep;try{await runJob(`/api/models/${encodeURIComponent(id)}/prepare`,{},j=>setProg("prog-"+id,j));S.models=await api("/api/models");renderChips();vEmb()}catch(e){errBox("prog-"+id,e);b.disabled=false}});
+  $$("[data-pre]").forEach(b=>b.onclick=()=>{const p=PRESETS[b.dataset.pre];$("#sa").value=p[0];$("#sb").value=p[1];$("#simGo").click()});
+  $("#simGo").onclick=async()=>{try{const r=await post("/api/similarity",{a:$("#sa").value,b:$("#sb").value});
+    $("#simOut").innerHTML=`<table class="t"><tr><th>Model</th><th class="num">Dims</th><th class="num">Cosine</th><th class="num">Dot (raw)</th><th class="num">L2 distance (raw)</th><th class="num">Vector lengths A / B</th></tr>${r.rows.map(x=>x.error?`<tr><td>${esc(x.model)}</td><td colspan="5">${esc(x.error)}</td></tr>`:`<tr><td>${esc(x.label)}</td><td class="num">${x.dim}</td><td class="num" style="background:${heat(x.cosine,0,1)}"><b>${f3(x.cosine)}</b></td><td class="num">${f3(x.dot_raw)}</td><td class="num">${f3(x.l2_raw)}</td><td class="num">${x.norms[0]} / ${x.norms[1]}</td></tr>`).join("")}</table>
+    <p class="note">Cosine 0.000 with LSA means the words are not in your corpus: LSA only knows the vocabulary it was fitted on. First 8 numbers of the unit vector for text A (${esc(r.rows[0]&&r.rows[0].label||"")}): <code>[${(r.rows[0]&&r.rows[0].preview||[]).join(", ")}]</code></p>`}catch(e){errBox("simOut",e)}};
+  $("#mapGo").onclick=async()=>{S.mapModel=$("#mapModel").value;$("#mapOut").innerHTML='<p class="note">Embedding...</p>';
+    try{const r=await post("/api/embedding-map",{model:S.mapModel});const doms=[...new Set(r.points.map(p=>p.domain))],dc=Object.fromEntries(doms.map((d,i)=>[d,PALETTE[i%PALETTE.length]]));
+      const tcolors={keyword:"#111",paraphrase:"#e11d48",question:"#0284c7",typo:"#ca8a04",identifier:"#7c3aed",other:"#555"};
+      const pts=r.points.map(p=>({...p,label:`${p.title} (${p.domain})`}));if($("#mapQ").checked)r.queries.forEach(q=>pts.push({...q,q:1,label:`query [${q.type}]: ${q.query}`}));
+      $("#mapOut").innerHTML=scatter(pts.map(p=>p),{color:p=>p.q?tcolors[p.type]||"#555":dc[p.domain]})+`<div class="legend">${doms.map(d=>`<span><i style="background:${dc[d]}"></i>${esc(d)}</span>`).join("")}</div>${$("#mapQ").checked?`<div class="legend">queries: ${Object.entries(tcolors).filter(([k])=>k!=="other").map(([k,c])=>`<span><i style="background:${c};border-radius:2px;transform:rotate(45deg)"></i>${k}</span>`).join("")}</div>`:""}<p class="note">PCA keeps ${pct(r.explained_variance)} of the variance in these two axes. Hover a point for its title.</p>`}catch(e){errBox("mapOut",e)}};
+}
+
+// ================================================================= 3 compare
+function vCmp(){
+  const v=$("#view"),bm={sparse:[],dense:[],hybrid:[]};S.methods.forEach(m=>bm[m.family].push(m));
+  const pre=S._cmpSel||new Set(S.methods.filter(m=>m.state==="ready").map(m=>m.id));
+  const box=m=>`<label style="font-weight:400;display:flex;gap:8px;align-items:flex-start;margin:3px 0;color:var(--ink)"><input type="checkbox" data-m="${esc(m.id)}" ${m.state==="ready"&&pre.has(m.id)?"checked":""} ${m.state!=="ready"?"disabled":""}><span>${esc(m.label)} ${m.state!=="ready"?`<span class="badge ${m.state}">${esc(m.state.replace("_"," "))}</span>`:""}</span></label>`;
+  v.innerHTML=`<h2 style="margin-top:0">Compare retrieval approaches</h2>
+  <p class="lead">Run sparse, dense and hybrid retrievers on the labeled dataset (${S.status?S.status.dataset.n_queries:""} queries). Models that are not ready (see tab 2) are greyed out.</p>
+  <div class="two"><div class="card"><b>Sparse</b>${bm.sparse.map(box).join("")}</div><div class="card"><b>Dense</b>${bm.dense.map(box).join("")}</div></div>
+  <div class="card" style="margin-top:12px"><b>Hybrid</b>${bm.hybrid.map(box).join("")}
+   <div class="row"><div><label for="hyd">Dense model used for hybrid and the failure analysis</label><select id="hyd"><option value="">auto (prefers a semantic model)</option>${bm.dense.filter(m=>m.state==="ready").map(m=>`<option value="${esc(m.id)}">${esc(m.label)}</option>`).join("")}</select></div></div></div>
+  <div class="row"><button class="primary" id="cmpGo">Run comparison</button></div>${progressBar("cmpProg")}<div id="cmpOut">${S.cmp?cmpHtml(S.cmp):""}</div>`;
+  $$("[data-m]").forEach(c=>c.onchange=()=>{S._cmpSel=new Set($$("[data-m]:checked").map(x=>x.dataset.m))});
+  $("#cmpGo").onclick=async()=>{const ids=$$("[data-m]:checked").map(x=>x.dataset.m);if(!ids.length){$("#cmpOut").innerHTML='<div class="banner warn">Select at least one method.</div>';return}
+    $("#cmpGo").disabled=true;try{S.cmp=await runJob("/api/compare",{methods:ids,hybrid_dense:$("#hyd").value||null},j=>setProg("cmpProg",j));clearProg("cmpProg");$("#cmpOut").innerHTML=cmpHtml(S.cmp);bindCmp()}catch(e){clearProg("cmpProg");errBox("cmpOut",e)}$("#cmpGo").disabled=false};
+  bindCmp();
+}
+const famColor={sparse:"var(--sparse)",dense:"var(--dense)",hybrid:"var(--hybrid)"};
+function cmpHtml(r){
+  const types=Object.keys(r.dataset.types),ms=r.methods,best=k=>Math.max(...ms.map(m=>m.metrics[k]));
+  let h=`<h3>Leaderboard <span class="note">(${r.dataset.n_queries} queries, sorted by MRR@10)</span></h3>
+  <table class="t"><tr><th>Method</th><th class="num">Recall@1</th><th class="num">Recall@5</th><th class="num">Recall@10</th><th class="num">MRR@10</th><th class="num">nDCG@10</th><th>MRR</th><th class="num">Search ms (p50 / p95)</th><th class="num">Encode query ms</th><th class="num">Index size</th><th class="num">Dim</th></tr>
+  ${ms.map(m=>`<tr><td><span class="badge ${m.family}">${m.family}</span> ${esc(m.label)}</td>${["recall@1","recall@5","recall@10","mrr@10","ndcg@10"].map(k=>`<td class="num" ${m.metrics[k]===best(k)?'style="font-weight:700;background:var(--ok-soft)"':""}>${f3(m.metrics[k])}</td>`).join("")}<td><div class="bar"><i style="width:${m.metrics["mrr@10"]*100}%;background:${famColor[m.family]}"></i></div></td><td class="num">${m.search_ms_p50} / ${m.search_ms_p95}</td><td class="num">${m.encode_query_ms_p50||"-"}</td><td class="num">${mb(m.index_bytes)}</td><td class="num">${m.dim||"-"}</td></tr>`).join("")}</table>
+  ${Object.keys(r.skipped).length?`<div class="banner warn"><b>Skipped:</b> ${Object.entries(r.skipped).map(([k,v])=>`${esc(k)}: ${esc(v)}`).join("; ")}</div>`:""}
+  <h3>MRR@10 by query type</h3><p class="lead">The overall average hides the story. Read each column: which method wins which kind of query? Darker green = better.</p>
+  <table class="t heat"><tr><th>Method</th>${types.map(t=>`<th class="num">${esc(t)} <span class="note">(${r.dataset.types[t]})</span></th>`).join("")}</tr>
+  ${ms.map(m=>`<tr><td>${esc(m.label)}</td>${types.map(t=>{const x=m.by_type[t]["mrr@10"],mx=Math.max(...ms.map(q=>q.by_type[t]["mrr@10"]));return `<td class="c" style="background:${heat(x)}${x===mx?";font-weight:700;outline:2px solid var(--ok);outline-offset:-2px":""}">${f2(x)}</td>`}).join("")}</tr>`).join("")}</table>`;
+  const c=r.analysis.complementarity;
+  if(c){const n=Object.values(c.counts).reduce((a,b)=>a+b,0),col={both:"#15803d",sparse_only:"#b45309",dense_only:"#3b4cca",neither:"#9aa1b4"},lab={both:"both found it",sparse_only:"only BM25",dense_only:"only dense",neither:"neither"};
+    h+=`<h3>Where they differ: BM25 vs ${esc(c.dense_model)} (answer in top ${c.k})</h3>
+    <div class="stack">${Object.entries(c.counts).filter(([,v])=>v).map(([k,v])=>`<div style="width:${v/n*100}%;background:${col[k]}" title="${lab[k]}: ${v}">${v}</div>`).join("")}</div>
+    <div class="legend">${Object.entries(lab).map(([k,t])=>`<span><i style="background:${col[k]}"></i>${t}: ${c.counts[k]}</span>`).join("")}</div>
+    <p class="lead">They fail on DIFFERENT queries. If a query counted as solved when either method solves it (the "oracle"), top-${c.k} would reach <b>${pct(c.oracle_hit_at_k)}</b>. That gap is what hybrid retrieval tries to close.</p>
+    <table class="t"><tr><th>Query type</th>${Object.keys(lab).map(k=>`<th class="num">${lab[k]}</th>`).join("")}</tr>${Object.entries(c.by_type).map(([t,o])=>`<tr><td>${esc(t)}</td>${Object.keys(lab).map(k=>`<td class="num">${o[k]}</td>`).join("")}</tr>`).join("")}</table>`;
+    const ex=(kind,title,sub)=>`<h3>${title}</h3><p class="lead">${sub}</p><div class="scroll"><table class="t"><tr><th>Type</th><th>Query</th><th>Correct passage</th><th>Top result returned</th><th class="num">Rank BM25 / dense</th><th>Why (heuristic)</th></tr>${r.analysis.failures[kind].map(e=>`<tr><td><span class="pill t">${esc(e.type)}</span></td><td>${esc(e.query)}</td><td>${esc(e.answer)}</td><td>${esc(e.top_returned)}</td><td class="num">${e.bm25_rank||">50"} / ${e.dense_rank||">50"}</td><td><span class="pill">${esc(e.why)}</span></td></tr>`).join("")||'<tr><td colspan="6">none</td></tr>'}</table></div>`;
+    h+=ex("sparse","Failure modes of sparse retrieval (BM25 missed, dense found it or both missed)","Typical causes: the query uses different words than the passage (vocabulary mismatch) or contains a misspelling.");
+    h+=ex("dense","Failure modes of dense retrieval (dense missed, BM25 found it or both missed)","Typical causes: exact codes and numbers, near-identical passages, or an embedding model that is too weak for the paraphrase.");
+  }
+  const md=r.analysis.metric_demo;
+  if(md)h+=`<h3>Why normalize? Cosine vs dot product vs distance</h3><p class="lead">Measured on <b>${esc(md.model)}</b>: the share of the top 5 results that agree with cosine ranking.</p>
+   <table class="t"><tr><th>Comparison</th><th class="num">Top-5 agreement with cosine</th></tr>
+   <tr><td>Dot product on the raw vectors (lengths ${md.norm_spread[0]} to ${md.norm_spread[1]})</td><td class="num">${pct(md["dot_vs_cosine_raw_overlap@5"])}</td></tr>
+   <tr><td>Euclidean distance on the raw vectors</td><td class="num">${pct(md["l2_vs_cosine_raw_overlap@5"])}</td></tr>
+   <tr><td>Euclidean distance on L2-normalized vectors</td><td class="num"><b>${pct(md["l2_vs_cosine_unit_overlap@5"])}</b></td></tr></table>
+   <p class="note">After normalization all three metrics rank identically, so indexes use the cheapest one (inner product).</p>`;
+  h+=`<h3>Inspect one query</h3><div class="row"><div><label for="qi">Query</label><select id="qi" style="max-width:640px">${r.queries.map(q=>`<option value="${esc(q.id)}" ${S.sel===q.id?"selected":""}>[${esc(q.type)}] ${esc(q.query)}</option>`).join("")}</select></div></div><div id="qiOut"></div>`;
+  return h;
+}
+function bindCmp(){
+  const sel=$("#qi");if(!sel||!S.cmp)return;
+  const show=()=>{S.sel=sel.value;const r=S.cmp,q=r.queries.find(x=>x.id===sel.value),rel=new Set(q.relevant);
+    $("#qiOut").innerHTML=`<p class="note">Correct passage: <b>${q.relevant.map(i=>esc(r.titles[i])).join(", ")}</b></p><table class="t"><tr><th>Method</th><th>Rank of correct passage</th><th>Top 3 results</th></tr>${r.methods.map(m=>{const rk=m.first_rank[q.id];return `<tr><td>${esc(m.label)}</td><td class="${rk===1?"hit":rk&&rk<=5?"":"miss"}" style="text-align:center">${rk||">50"}</td><td>${m.rankings[q.id].slice(0,3).map((id,i)=>`<span style="${rel.has(id)?"font-weight:700;color:var(--ok)":""}">${i+1}. ${esc(r.titles[id])}${rel.has(id)?" ✓":""}</span>`).join("<br>")}</td></tr>`}).join("")}</table>`};
+  sel.onchange=show;show();
+}
+
+// ================================================================= 4 ANN
+function vAnn(){
+  const v=$("#view"),ok=S.status&&S.status.faiss.available;
+  v.innerHTML=`<h2 style="margin-top:0">ANN indexes: recall vs latency vs memory</h2>
+  <p class="lead">Builds Flat (exact), HNSW, IVF-Flat, IVF-PQ (with and without exact re-ranking) and PQ on synthetic embedding-like vectors, sweeps each index's quality knob (<code>efSearch</code> for HNSW, <code>nprobe</code> for IVF), and compares against exact search. Latency is one query at a time on one CPU thread. Larger sets take longer: 30,000 vectors takes about 20 s.</p>
+  ${ok?"":`<div class="banner bad">FAISS is not installed. Run <code>pip install faiss-cpu</code> and restart.</div>`}
+  <div class="row"><div><label for="an">Vectors</label><select id="an">${[10000,30000,50000,100000].map(n=>`<option value="${n}" ${n===30000?"selected":""}>${n.toLocaleString()}</option>`).join("")}</select></div>
+  <div><label for="ad">Dimensions</label><select id="ad">${[64,128,256,384].map(n=>`<option ${n===128?"selected":""}>${n}</option>`).join("")}</select></div>
+  <div><label for="ak">k (neighbours)</label><select id="ak"><option>10</option><option>5</option><option>20</option></select></div>
+  <button class="primary" id="annGo" ${ok?"":"disabled"}>Run benchmark</button></div>${progressBar("annProg")}<div id="annOut">${S.ann?annHtml(S.ann):""}</div>`;
+  $("#annGo").onclick=async()=>{$("#annGo").disabled=true;try{S.ann=await runJob("/api/ann/run",{n:+$("#an").value,d:+$("#ad").value,k:+$("#ak").value},j=>setProg("annProg",j));clearProg("annProg");$("#annOut").innerHTML=annHtml(S.ann)}catch(e){clearProg("annProg");errBox("annOut",e)}$("#annGo").disabled=false};
+}
+function annHtml(a){
+  const fams=[...new Set(a.points.map(p=>p.index))],col=Object.fromEntries(fams.map((f,i)=>[f,PALETTE[i%PALETTE.length]]));
+  const series=fams.map(f=>({name:f,color:col[f],dash:f.includes("re-rank"),points:a.points.filter(p=>p.index===f).map(p=>({x:p.latency_ms,y:p.recall,label:p.param_name?`${p.param_name}=${p.param}`:""}))}));
+  series.push({name:"Flat (exact)",color:"#111",points:[{x:a.flat.latency_ms,y:1,label:""}]});
+  const targets=[0.9,0.95,0.99];
+  return `<div class="banner">Exact search over ${a.settings.n.toLocaleString()} vectors (${a.settings.d} dims): <b>${a.flat.latency_ms} ms</b> per query (p95 ${a.flat.p95_ms} ms), index ${mb(a.flat.bytes)}.</div>
+  <h3>Recall vs latency</h3><p class="lead">Each line is one index; each dot is one setting of its knob (hover for the value). <b>Up and to the left is better</b>: high recall at low latency. The black dot is exact search.</p>
+  ${lineChart({series,xLabel:"latency per query (ms, log scale)",yLabel:`recall@${a.settings.k}`})}
+  <div class="legend">${series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join("")}</div>
+  <h3>Fastest setting that still reaches a recall target</h3>
+  <table class="t"><tr><th>Index</th>${targets.map(t=>`<th>recall ≥ ${pct(t)}</th>`).join("")}</tr>
+  ${fams.map(f=>`<tr><td>${esc(f)}</td>${targets.map(t=>{const b=a.best.find(x=>x.index===f&&x.target===t);return b&&b.recall?`<td><b>${esc(b.param)}</b>: ${b.latency_ms} ms, <span class="badge ready">${b.speedup}x faster</span> (recall ${f3(b.recall)})</td>`:`<td class="miss">never reached</td>`}).join("")}</tr>`).join("")}</table>
+  <h3>Memory and build cost</h3>
+  <table class="t"><tr><th>Index</th><th class="num">Build time</th><th class="num">RAM per vector</th><th class="num">Total</th><th>Compared with flat</th></tr>
+  <tr><td>Flat (exact)</td><td class="num">${a.flat.build_s} s</td><td class="num">${(a.flat.bytes/a.settings.n).toFixed(0)} B</td><td class="num">${mb(a.flat.bytes)}</td><td>1.00x</td></tr>
+  ${a.builds.map(b=>`<tr><td>${esc(b.label)}${b.note?` <span class="note">(${esc(b.note)})</span>`:""}</td><td class="num">${b.build_s} s</td><td class="num">${b.bytes_per_vector} B</td><td class="num">${mb(b.bytes)}</td><td>${b.compression_vs_flat>=1?`<span class="badge ready">${b.compression_vs_flat}x smaller</span>`:`<span class="badge needs_download">${(1/b.compression_vs_flat).toFixed(2)}x larger</span>`}</td></tr>`).join("")}</table>
+  <p class="note">Things to notice: HNSW needs MORE memory than flat (it stores a graph) but gives the best recall per millisecond. IVF-Flat keeps full vectors, so no memory saving. PQ shrinks memory 10-25x and loses recall; the re-ranked variant (dashed) recovers most of it by re-scoring the top candidates with exact vectors. These synthetic vectors compress worse than real embeddings, so absolute PQ recall is pessimistic.</p>`;
+}
+
+// ================================================================= 5 vector db
+async function vVdb(){
+  const v=$("#view");let info={built:false};try{info=await api("/api/vdb/info")}catch(e){}
+  const ready=S.models.filter(m=>m.state==="ready"),ok=S.status&&S.status.faiss.available;
+  v.innerHTML=`<h2 style="margin-top:0">A mini vector database</h2>
+  <p class="lead">What a vector database adds to an index: stored payloads, upsert and delete, an HNSW index kept in sync, metadata filters, and a <b>query planner</b> that picks how to run each filtered search. Here it is built over the passages of the current dataset.</p>
+  <div class="row"><div><label for="vm">Embedding model</label><select id="vm">${ready.map(m=>`<option value="${esc(m.id)}" ${info.model===m.id?"selected":""}>${esc(m.label)}</option>`).join("")}</select></div><button class="primary" id="vBuild">${info.built?"Rebuild":"Build the database"}</button>
+  <span class="note">${info.built?`${info.count} vectors · ${info.dim} dims · model ${esc(info.model)} · ${info.indexed_with_hnsw?"HNSW index":"exact scan (too few vectors for a graph)"}`:"not built yet"}</span></div>${progressBar("vProg")}<div id="vBuildOut"></div>
+  ${info.built?`<h3>Search</h3><div class="row"><div style="flex:1;min-width:280px"><label for="vq">Query</label><input type="text" id="vq" value="how much paid time off do I get" style="width:100%"></div>
+   <div><label for="vd">Filter: domain</label><select id="vd"><option value="">(none)</option>${info.domains.map(d=>`<option>${esc(d)}</option>`).join("")}</select></div>
+   <div><label for="vmode">Strategy</label><select id="vmode"><option value="auto">auto (query planner)</option><option value="exact">exact (filter first, scan survivors)</option><option value="in-graph">in-graph (filter inside HNSW)</option><option value="post">post-filter (ANN, then drop)</option><option value="ann">ann (no filter)</option></select></div>
+   <div><label for="vk">k</label><select id="vk"><option>5</option><option>3</option><option>10</option></select></div><button class="primary" id="vGo">Search</button></div><div id="vOut"></div>
+   <h3>Upsert and delete</h3><div class="row"><div style="flex:1;min-width:300px"><label for="un">New passage text</label><input type="text" id="un" style="width:100%" value="Employees get a free gym membership after six months."></div><div><label for="ud">Domain</label><input type="text" id="ud" value="hr" style="width:90px"></div><button id="uGo">Upsert</button>
+   <div><label for="di">Delete by id</label><input type="text" id="di" placeholder="e.g. d010" style="width:110px"></div><button id="dGo">Delete</button></div><div id="uOut" class="note"></div>`:""}
+  <h2>Experiment: how much do filters hurt ANN search?</h2>
+  <p class="lead">20,000 vectors, a numeric metadata field, and filters that keep 50% down to 0.2% of the data. For each, three strategies are scored against exact filtered search. <b>Post-filter</b> searches the graph for 3k candidates then drops those that do not match. <b>In-graph</b> skips non-matching ids during the graph walk. <b>Exact</b> scans the survivors.</p>
+  <div class="row"><button id="fGo" class="primary" ${ok?"":"disabled"}>Run filter experiment</button></div>${progressBar("fProg")}<div id="fOut">${S.flt?fltHtml(S.flt):""}</div>`;
+  $("#vBuild").onclick=async()=>{$("#vBuild").disabled=true;try{await runJob("/api/vdb/build",{model:$("#vm").value},j=>setProg("vProg",j));vVdb()}catch(e){clearProg("vProg");errBox("vBuildOut",e);$("#vBuild").disabled=false}};
+  if(info.built){
+    $("#vGo").onclick=async()=>{try{const r=await post("/api/vdb/search",{query:$("#vq").value,domain:$("#vd").value,mode:$("#vmode").value,k:+$("#vk").value});
+      $("#vOut").innerHTML=`<p class="note">strategy used: <b>${esc(r.mode)}</b> · ${r.ms} ms · ${r.candidates_allowed} vectors pass the filter · ${r.hits.length} result(s)</p>${r.hits.length?`<table class="t"><tr><th class="num">Score</th><th>Id</th><th>Domain</th><th>Title</th><th>Text</th></tr>${r.hits.map(h=>`<tr><td class="num">${h.score}</td><td class="mono">${esc(h.id)}</td><td>${esc(h.payload.domain)}</td><td>${esc(h.payload.title)}</td><td>${esc(h.payload.text)}</td></tr>`).join("")}</table>`:'<div class="banner warn">No results. With post-filtering a selective filter can leave nothing after the drop.</div>'}`}catch(e){errBox("vOut",e)}};
+    $("#uGo").onclick=async()=>{try{const r=await post("/api/vdb/upsert",{text:$("#un").value,domain:$("#ud").value});$("#uOut").textContent=`Upserted ${r.id}. The database now holds ${r.count} vectors.`}catch(e){errBox("uOut",e)}};
+    $("#dGo").onclick=async()=>{try{const r=await post("/api/vdb/delete",{id:$("#di").value});$("#uOut").textContent=r.deleted?`Deleted. ${r.count} vectors remain (the graph is rebuilt lazily on the next search).`:"No such id."}catch(e){errBox("uOut",e)}};
+  }
+  $("#fGo").onclick=async()=>{$("#fGo").disabled=true;try{S.flt=await runJob("/api/vdb/filter-experiment",{n:20000,d:64,k:10},j=>setProg("fProg",j));clearProg("fProg");$("#fOut").innerHTML=fltHtml(S.flt)}catch(e){clearProg("fProg");errBox("fOut",e)}$("#fGo").disabled=false};
+}
+function fltHtml(f){
+  const sels=[...new Set(f.rows.map(r=>r.selectivity))],modes=["exact","post","in-graph"],get=(s,m)=>f.rows.find(r=>r.selectivity===s&&r.mode===m);
+  return `<table class="t"><tr><th>Filter keeps</th>${modes.map(m=>`<th class="num" colspan="2">${m}</th>`).join("")}</tr><tr><th></th>${modes.map(()=>`<th class="num">recall / results returned</th><th class="num">ms</th>`).join("")}</tr>
+  ${sels.map(s=>`<tr><td><b>${(s*100).toFixed(1)}%</b> <span class="note">(${get(s,"exact").survivors.toLocaleString()} vectors)</span></td>${modes.map(m=>{const r=get(s,m);return `<td class="c num" style="background:${heat(r.recall,0,1)}">${f2(r.recall)} / ${r.avg_results} of ${f.settings.k}</td><td class="num">${r.latency_ms}</td>`}).join("")}</tr>`).join("")}</table>
+  <p class="note">Post-filtering collapses quickly: at a selective filter it returns almost nothing. In-graph filtering stays good down to a few percent, then the graph becomes too sparse to navigate. Exact scanning is always correct and is cheap precisely when the filter is selective: that is why the planner (strategy "auto") switches to it.</p>`;
+}
+
+// ================================================================= 6 concepts
+async function vCon(){
+  const v=$("#view");v.innerHTML='<p class="lead">Loading...</p>';
+  const {concepts,evidence}=await api("/api/concepts");let last="";
+  const para=t=>{const out=[];let ul=[];const fl=()=>{if(ul.length){out.push("<ul>"+ul.map(x=>`<li>${esc(x)}</li>`).join("")+"</ul>");ul=[]}};t.split("\n").forEach(l=>{if(l.startsWith("- "))ul.push(l.slice(2));else{fl();out.push(`<p>${esc(l)}</p>`)}});fl();return out.join("")};
+  v.innerHTML=`<h2 style="margin-top:0">Concepts, with evidence from your runs</h2><p class="lead">Each topic explains the idea; the highlighted box shows what YOUR runs measured. Run the comparison (tab 3), the ANN benchmark (tab 4) and the filter experiment (tab 5) to fill them in.</p>`+
+  concepts.map(c=>{let h="";if(c.group!==last){h+=`<h2>${esc(c.group)}</h2>`;last=c.group}const e=evidence[c.id];
+    return h+`<details class="c"><summary><span>${esc(c.title)}</span><span class="hl">${e?esc(e.headline):""}</span></summary>${e?`<div class="ev"><b>In your runs:</b> ${esc(e.headline)}<ul>${e.items.filter(Boolean).map(i=>`<li>${esc(i)}</li>`).join("")}</ul></div>`:""}<div class="expl">${para(c.text)}<p class="note">Code: ${esc(c.code)}</p></div></details>`}).join("");
+}
+
+// ================================================================= start
+async function refreshStatus(){S.status=await api("/api/status");S.models=await api("/api/models");S.methods=await api("/api/methods");renderChips()}
+(async()=>{renderTabs();try{await refreshStatus()}catch(e){$("#view").innerHTML=`<div class="banner bad">${esc(e.message)}</div>`;return}render()})();
+</script>
+</body>
+</html>
