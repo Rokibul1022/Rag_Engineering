@@ -37,7 +37,8 @@ python datasets/acme_kb/build_dataset.py  # regenerate the built-in dataset
 ```
 
 ## Tools (beginner friendly)
-Flask (server) · NumPy (vectors, written-from-scratch BM25, LSA, cosine) · FAISS (HNSW, IVF, PQ; `faiss-cpu`) · plain HTML/CSS/JavaScript with hand-written SVG charts. No GPU, no API keys, no database to install.
+Flask (server) · NumPy (vectors, written-from-scratch BM25, LSA, cosine) · FAISS (HNSW, IVF, PQ; `faiss-gpu`) · plain HTML/CSS/JavaScript with hand-written SVG charts.
+## install faiss gpu in windows via wsl2 - if linux isn't available-
 
 ## Layout
 ```

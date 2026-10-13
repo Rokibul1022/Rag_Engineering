@@ -222,6 +222,15 @@ ST_MODELS = [
 ]
 
 
+def st_cached(hub: str) -> bool:
+    try:
+        from huggingface_hub import try_to_load_from_cache
+        res = try_to_load_from_cache(hub, "modules.json")
+        return isinstance(res, str)
+    except Exception:
+        return False
+
+
 class SentenceTransformerEmbedder(Embedder):
     kind = "neural"
 
@@ -235,7 +244,11 @@ class SentenceTransformerEmbedder(Embedder):
             import sentence_transformers  # noqa: F401
         except ImportError:
             return {"state": "needs_install", "note": "pip install sentence-transformers"}
-        return {"state": "ready" if self.hub in _ST_CACHE else "needs_download", "note": "loaded" if self.hub in _ST_CACHE else "downloads weights on first use"}
+        if self.hub in _ST_CACHE:
+            return {"state": "ready", "note": "loaded"}
+        if st_cached(self.hub):
+            return {"state": "ready", "note": "cached"}
+        return {"state": "needs_download", "note": "downloads weights on first use"}
 
     def prepare(self, report=None):
         if self.hub not in _ST_CACHE:
