@@ -1,0 +1,206 @@
+{"id": "q001", "query": "lifecycle rules archive tier days", "relevant": ["d001"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q002", "query": "automatically shift old files into cheaper cold storage", "relevant": ["d001"], "type": "paraphrase", "lexical_overlap": 0.29}
+{"id": "q003", "query": "How long does it take to restore archived objects?", "relevant": ["d001"], "type": "question", "lexical_overlap": 0.8}
+{"id": "q004", "query": "autoscaling CPU 70 percent scale out", "relevant": ["d002"], "type": "keyword", "lexical_overlap": 0.83}
+{"id": "q005", "query": "servers multiply by themselves whenever the processor gets busy", "relevant": ["d002"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q006", "query": "When does the default policy add more machines?", "relevant": ["d002"], "type": "question", "lexical_overlap": 0.8}
+{"id": "q007", "query": "point-in-time recovery restore any second", "relevant": ["d003"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q008", "query": "rewind the data store to an earlier moment after someone deleted rows by mistake", "relevant": ["d003"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q009", "query": "databse snapshoot retention days", "relevant": ["d003"], "type": "typo", "lexical_overlap": 0.5}
+{"id": "q010", "query": "HTTP 429 exponential backoff", "relevant": ["d004"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q011", "query": "what happens when I send too many calls to the interface too quickly", "relevant": ["d004"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q012", "query": "How many requests per minute are allowed?", "relevant": ["d004"], "type": "question", "lexical_overlap": 0.6}
+{"id": "q013", "query": "Does AcmeCloud accept text message codes for 2FA?", "relevant": ["d005"], "type": "question", "lexical_overlap": 0.17}
+{"id": "q014", "query": "force everyone to prove who they are with an extra step when signing in", "relevant": ["d005"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q015", "query": "two-facter authentification hardware keys", "relevant": ["d005"], "type": "typo", "lexical_overlap": 0.6}
+{"id": "q016", "query": "keep my servers hidden from the outside world", "relevant": ["d006"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q017", "query": "private network subnets internal backbone", "relevant": ["d006"], "type": "keyword", "lexical_overlap": 0.8}
+{"id": "q018", "query": "log retention 30 days export compliance", "relevant": ["d007"], "type": "keyword", "lexical_overlap": 0.83}
+{"id": "q019", "query": "how can auditors still read old diagnostic messages next year", "relevant": ["d007"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q020", "query": "Which filters does log search support?", "relevant": ["d007"], "type": "question", "lexical_overlap": 0.75}
+{"id": "q021", "query": "What is the response time for critical incidents?", "relevant": ["d008"], "type": "question", "lexical_overlap": 1.0}
+{"id": "q022", "query": "how fast will an engineer answer when production is down", "relevant": ["d008"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q023", "query": "premium support 15 minute response", "relevant": ["d008"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q024", "query": "annual leave carry over five days", "relevant": ["d009"], "type": "keyword", "lexical_overlap": 0.8}
+{"id": "q025", "query": "how much paid time off do staff get each twelve months", "relevant": ["d009"], "type": "paraphrase", "lexical_overlap": 0.22}
+{"id": "q026", "query": "How many vacation days do employees get?", "relevant": ["d009"], "type": "question", "lexical_overlap": 0.4}
+{"id": "q027", "query": "sick leave medical certificate three days", "relevant": ["d010"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q028", "query": "when must I show proof of illness to my manager", "relevant": ["d010"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q029", "query": "Do I need a doctor's note for sick days?", "relevant": ["d010"], "type": "question", "lexical_overlap": 0.33}
+{"id": "q030", "query": "parental leave 16 weeks caregivers", "relevant": ["d011"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q031", "query": "time away from the office after having a baby", "relevant": ["d011"], "type": "paraphrase", "lexical_overlap": 0.33}
+{"id": "q032", "query": "How long is leave for the second parent?", "relevant": ["d011"], "type": "question", "lexical_overlap": 0.25}
+{"id": "q033", "query": "What are the core hours for remote workers?", "relevant": ["d012"], "type": "question", "lexical_overlap": 1.0}
+{"id": "q034", "query": "how often may I do my job from home", "relevant": ["d012"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q035", "query": "remote work three days manager approval", "relevant": ["d012"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q036", "query": "expense reimbursement itemized receipts 30 days", "relevant": ["d013"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q037", "query": "claim back money I spent on a work trip", "relevant": ["d013"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q038", "query": "reimbusement recipts meals per day", "relevant": ["d013"], "type": "typo", "lexical_overlap": 0.6}
+{"id": "q039", "query": "How often are performance reviews held?", "relevant": ["d014"], "type": "question", "lexical_overlap": 0.5}
+{"id": "q040", "query": "how are my colleagues and boss going to judge my work", "relevant": ["d014"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q041", "query": "review self-assessment peer feedback five-point scale", "relevant": ["d014"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q042", "query": "learning budget 1,200 courses conferences", "relevant": ["d015"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q043", "query": "money set aside for training and education", "relevant": ["d015"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q044", "query": "Does the unused learning money carry over?", "relevant": ["d015"], "type": "question", "lexical_overlap": 0.5}
+{"id": "q045", "query": "what happens when a new colleague starts at the company", "relevant": ["d016"], "type": "paraphrase", "lexical_overlap": 0.2}
+{"id": "q046", "query": "new hires laptop first day security training", "relevant": ["d016"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q047", "query": "Who helps newcomers during the first month?", "relevant": ["d016"], "type": "question", "lexical_overlap": 0.4}
+{"id": "q048", "query": "Do I need a visa to visit Japan for 30 days?", "relevant": ["d017"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q049", "query": "entry rules for tourists arriving in Tokyo", "relevant": ["d017"], "type": "paraphrase", "lexical_overlap": 0.2}
+{"id": "q050", "query": "pasport valid onward travel japan", "relevant": ["d017"], "type": "typo", "lexical_overlap": 0.8}
+{"id": "q051", "query": "Suica card Tokyo trains buses", "relevant": ["d018"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q052", "query": "contactless pass for public transport in the Japanese capital", "relevant": ["d018"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q053", "query": "Where can I add money to a Suica?", "relevant": ["d018"], "type": "question", "lexical_overlap": 0.33}
+{"id": "q054", "query": "altitude sickness 2,500 meters", "relevant": ["d019"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q055", "query": "feeling dizzy and breathless high up in the mountains", "relevant": ["d019"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q056", "query": "How can I avoid mountain sickness?", "relevant": ["d019"], "type": "question", "lexical_overlap": 0.33}
+{"id": "q057", "query": "baggage allowance 23 kilograms economy", "relevant": ["d020"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q058", "query": "how heavy may my suitcase be on a budget ticket", "relevant": ["d020"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q059", "query": "What is the fee for overweight luggage?", "relevant": ["d020"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q060", "query": "protection if my holiday falls apart", "relevant": ["d021"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q061", "query": "travel insurance cancelled flights lost luggage", "relevant": ["d021"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q062", "query": "Are pre-existing conditions covered?", "relevant": ["d021"], "type": "question", "lexical_overlap": 0.75}
+{"id": "q063", "query": "Mona Lisa Room 711", "relevant": ["d022"], "type": "identifier", "lexical_overlap": 1.0}
+{"id": "q064", "query": "Which day is the Louvre closed?", "relevant": ["d022"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q065", "query": "reserving an entry time for the famous Paris art gallery", "relevant": ["d022"], "type": "paraphrase", "lexical_overlap": 0.14}
+{"id": "q066", "query": "sourdough starter feeding flour water", "relevant": ["d023"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q067", "query": "keep a wild yeast culture alive for homemade bread", "relevant": ["d023"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q068", "query": "sourdogh starter feding", "relevant": ["d023"], "type": "typo", "lexical_overlap": 0.33}
+{"id": "q069", "query": "How much water do I need for basmati rice?", "relevant": ["d024"], "type": "question", "lexical_overlap": 0.6}
+{"id": "q070", "query": "get light grains that do not clump together", "relevant": ["d024"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q071", "query": "basmati rinse rest covered 5 minutes", "relevant": ["d024"], "type": "keyword", "lexical_overlap": 0.83}
+{"id": "q072", "query": "avoid hurting my hand while chopping vegetables", "relevant": ["d025"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q073", "query": "knives sharp dull blades fingertips board", "relevant": ["d025"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q074", "query": "How long can leftovers stay in the fridge?", "relevant": ["d026"], "type": "question", "lexical_overlap": 0.25}
+{"id": "q075", "query": "leftovers refrigerated four days reheat 74", "relevant": ["d026"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q076", "query": "is yesterday's dinner still safe to eat", "relevant": ["d026"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q077", "query": "espresso 18 grams 27 seconds", "relevant": ["d027"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q078", "query": "pulling a strong small shot of caffeine", "relevant": ["d027"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q079", "query": "What water temperature is best for espresso?", "relevant": ["d027"], "type": "question", "lexical_overlap": 0.75}
+{"id": "q080", "query": "What is the difference between baking soda and baking powder?", "relevant": ["d028"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q081", "query": "why does my cake taste of metal", "relevant": ["d028"], "type": "paraphrase", "lexical_overlap": 0.33}
+{"id": "q082", "query": "baking soda acidic buttermilk", "relevant": ["d028"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q083", "query": "sleep seven to nine hours regular schedule screens", "relevant": ["d029"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q084", "query": "how to rest better at night", "relevant": ["d029"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q085", "query": "How many hours of sleep do adults need?", "relevant": ["d029"], "type": "question", "lexical_overlap": 0.8}
+{"id": "q086", "query": "How much water should I drink daily?", "relevant": ["d030"], "type": "question", "lexical_overlap": 0.25}
+{"id": "q087", "query": "easy way to tell whether I am drinking enough fluids", "relevant": ["d030"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q088", "query": "hydration two liters pale yellow", "relevant": ["d030"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q089", "query": "5 kilometer beginner plan eight weeks", "relevant": ["d031"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q090", "query": "go from the sofa to finishing a short race", "relevant": ["d031"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q091", "query": "How often should a beginner run each week?", "relevant": ["d031"], "type": "question", "lexical_overlap": 0.6}
+{"id": "q092", "query": "dynamic stretching static stretching 30 seconds", "relevant": ["d032"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q093", "query": "loosening up limbs prior to a workout versus afterwards", "relevant": ["d032"], "type": "paraphrase", "lexical_overlap": 0.14}
+{"id": "q094", "query": "How much protein per kilo of body weight?", "relevant": ["d033"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q095", "query": "protein 1.2 to 2.0 grams eggs beans fish", "relevant": ["d033"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q096", "query": "nutrient needed to build muscle and where to find it", "relevant": ["d033"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q097", "query": "savings interest 3.8 percent annual", "relevant": ["d034"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q098", "query": "how much extra money does my deposit earn every year", "relevant": ["d034"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q099", "query": "Is there a minimum balance for the savings account?", "relevant": ["d034"], "type": "question", "lexical_overlap": 1.0}
+{"id": "q100", "query": "late payment fee 25 dollars penalty rate", "relevant": ["d035"], "type": "keyword", "lexical_overlap": 0.86}
+{"id": "q101", "query": "what if I forget to settle my card bill on time", "relevant": ["d035"], "type": "paraphrase", "lexical_overlap": 0.2}
+{"id": "q102", "query": "What is the penalty interest rate?", "relevant": ["d035"], "type": "question", "lexical_overlap": 1.0}
+{"id": "q103", "query": "SWIFT code IBAN transfer", "relevant": ["d036"], "type": "identifier", "lexical_overlap": 1.0}
+{"id": "q104", "query": "What details do I need to send money abroad?", "relevant": ["d036"], "type": "question", "lexical_overlap": 0.0}
+{"id": "q105", "query": "cost of moving funds to a foreign bank", "relevant": ["d036"], "type": "paraphrase", "lexical_overlap": 0.2}
+{"id": "q106", "query": "50/30/20 rule", "relevant": ["d037"], "type": "identifier", "lexical_overlap": 1.0}
+{"id": "q107", "query": "simple formula to divide my monthly salary", "relevant": ["d037"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q108", "query": "What share of income should go to savings?", "relevant": ["d037"], "type": "question", "lexical_overlap": 0.25}
+{"id": "q109", "query": "do not put all your eggs in one basket", "relevant": ["d038"], "type": "paraphrase", "lexical_overlap": 0.2}
+{"id": "q110", "query": "diversification index funds portfolio low cost", "relevant": ["d038"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q111", "query": "Why do investors spread money across assets?", "relevant": ["d038"], "type": "question", "lexical_overlap": 0.4}
+{"id": "q112", "query": "How big should an emergency fund be?", "relevant": ["d039"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q113", "query": "cash cushion for unexpected hardship", "relevant": ["d039"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q114", "query": "emergency fund three to six months expenses", "relevant": ["d039"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q115", "query": "Wi-Fi slow restart router 5 GHz", "relevant": ["d040"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q116", "query": "my internet connection at home is sluggish", "relevant": ["d040"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q117", "query": "wifi slwo restart rooter", "relevant": ["d040"], "type": "typo", "lexical_overlap": 0.25}
+{"id": "q118", "query": "make my smartphone power cell survive for years", "relevant": ["d041"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q119", "query": "lithium-ion battery 20 and 80 percent hot cars", "relevant": ["d041"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q120", "query": "Is it bad to leave my phone in a hot car?", "relevant": ["d041"], "type": "question", "lexical_overlap": 0.4}
+{"id": "q121", "query": "password manager unique master password", "relevant": ["d042"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q122", "query": "how can I keep track of many different login secrets", "relevant": ["d042"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q123", "query": "What protects a password vault?", "relevant": ["d042"], "type": "question", "lexical_overlap": 0.33}
+{"id": "q124", "query": "3-2-1 backup rule", "relevant": ["d043"], "type": "identifier", "lexical_overlap": 1.0}
+{"id": "q125", "query": "how many duplicates of my files should exist and where", "relevant": ["d043"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q126", "query": "What does the 3-2-1 rule mean for backups?", "relevant": ["d043"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q127", "query": "Why does my printer say offline?", "relevant": ["d044"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q128", "query": "printer offline re-add system settings network", "relevant": ["d044"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q129", "query": "the machine for paper output refuses to respond", "relevant": ["d044"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q130", "query": "connect wireless earphones to my mobile", "relevant": ["d045"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q131", "query": "pair Bluetooth headphones power button blinks blue", "relevant": ["d045"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q132", "query": "How do I put headphones in pairing mode?", "relevant": ["d045"], "type": "question", "lexical_overlap": 0.5}
+{"id": "q133", "query": "how green leaves make food out of light", "relevant": ["d046"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q134", "query": "photosyntesis chlorophil chloroplasts", "relevant": ["d046"], "type": "typo", "lexical_overlap": 0.33}
+{"id": "q135", "query": "Where in the cell does photosynthesis happen?", "relevant": ["d046"], "type": "question", "lexical_overlap": 0.33}
+{"id": "q136", "query": "why do tremors happen mostly near the edges of continents", "relevant": ["d047"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q137", "query": "plates boundaries earthquakes volcanoes collide", "relevant": ["d047"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q138", "query": "How fast do tectonic plates move?", "relevant": ["d047"], "type": "question", "lexical_overlap": 0.5}
+{"id": "q139", "query": "water cycle evaporates condenses precipitation", "relevant": ["d048"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q140", "query": "how does seawater end up as rain and flow back again", "relevant": ["d048"], "type": "paraphrase", "lexical_overlap": 0.14}
+{"id": "q141", "query": "force equals mass times acceleration", "relevant": ["d049"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q142", "query": "why is a loaded truck harder to get moving than an empty one", "relevant": ["d049"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q143", "query": "What does Newton's second law say?", "relevant": ["d049"], "type": "question", "lexical_overlap": 0.8}
+{"id": "q144", "query": "DNA bases adenine thymine guanine cytosine", "relevant": ["d050"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q145", "query": "the molecule carrying hereditary instructions", "relevant": ["d050"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q146", "query": "Which base pairs with guanine?", "relevant": ["d050"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q147", "query": "cosmic object that traps even beams of brightness", "relevant": ["d051"], "type": "paraphrase", "lexical_overlap": 0.17}
+{"id": "q148", "query": "black hole event horizon gravity", "relevant": ["d051"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q149", "query": "What is the event horizon?", "relevant": ["d051"], "type": "question", "lexical_overlap": 1.0}
+{"id": "q150", "query": "how does the body learn to fight a germ before meeting it", "relevant": ["d052"], "type": "paraphrase", "lexical_overlap": 0.17}
+{"id": "q151", "query": "vaccines immune system pathogen weakened", "relevant": ["d052"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q152", "query": "Why does the body respond faster after vaccination?", "relevant": ["d052"], "type": "question", "lexical_overlap": 0.4}
+{"id": "q153", "query": "my model is great on practice data but fails in the real world", "relevant": ["d053"], "type": "paraphrase", "lexical_overlap": 0.29}
+{"id": "q154", "query": "overfitting regularization training examples", "relevant": ["d053"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q155", "query": "How can I reduce overfitting?", "relevant": ["d053"], "type": "question", "lexical_overlap": 1.0}
+{"id": "q156", "query": "embedding vector cosine similarity angle", "relevant": ["d054"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q157", "query": "numbers that capture what a sentence means", "relevant": ["d054"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q158", "query": "What does cosine similarity compare?", "relevant": ["d054"], "type": "question", "lexical_overlap": 0.67}
+{"id": "q159", "query": "What do central banks do to slow inflation?", "relevant": ["d055"], "type": "question", "lexical_overlap": 1.0}
+{"id": "q160", "query": "why does my money buy less every year", "relevant": ["d055"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q161", "query": "inflation prices purchasing power interest rates", "relevant": ["d055"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q162", "query": "why is the planet getting warmer", "relevant": ["d056"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q163", "query": "greenhouse gases carbon dioxide methane fossil fuels", "relevant": ["d056"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q164", "query": "What is the biggest source of added carbon dioxide?", "relevant": ["d056"], "type": "question", "lexical_overlap": 0.8}
+{"id": "q165", "query": "moon phases 29.5 days full moon", "relevant": ["d057"], "type": "keyword", "lexical_overlap": 1.0}
+{"id": "q166", "query": "why does our satellite change shape in the night sky", "relevant": ["d057"], "type": "paraphrase", "lexical_overlap": 0.0}
+{"id": "q167", "query": "How long is the lunar cycle?", "relevant": ["d057"], "type": "question", "lexical_overlap": 0.33}
+{"id": "q168", "query": "How many Ethernet ports does the RT-2215 have?", "relevant": ["d059"], "type": "identifier", "lexical_overlap": 0.8}
+{"id": "q169", "query": "RT-3340 maximum speed", "relevant": ["d060"], "type": "identifier", "lexical_overlap": 1.0}
+{"id": "q170", "query": "How many Ethernet ports does the RT-3345 have?", "relevant": ["d061"], "type": "identifier", "lexical_overlap": 0.8}
+{"id": "q171", "query": "How many Ethernet ports does the RT-4415 have?", "relevant": ["d063"], "type": "identifier", "lexical_overlap": 0.8}
+{"id": "q172", "query": "How many Ethernet ports does the RT-5520 have?", "relevant": ["d064"], "type": "identifier", "lexical_overlap": 0.8}
+{"id": "q173", "query": "RT-5525 maximum speed", "relevant": ["d065"], "type": "identifier", "lexical_overlap": 1.0}
+{"id": "q174", "query": "How many Ethernet ports does the RT-6605 have?", "relevant": ["d067"], "type": "identifier", "lexical_overlap": 0.8}
+{"id": "q175", "query": "RT-7710 maximum speed", "relevant": ["d068"], "type": "identifier", "lexical_overlap": 1.0}
+{"id": "q176", "query": "How many Ethernet ports does the RT-7715 have?", "relevant": ["d069"], "type": "identifier", "lexical_overlap": 0.8}
+{"id": "q177", "query": "what does error code E1002 mean", "relevant": ["d071"], "type": "identifier", "lexical_overlap": 0.5}
+{"id": "q178", "query": "what does error code E2041 mean", "relevant": ["d073"], "type": "identifier", "lexical_overlap": 0.5}
+{"id": "q179", "query": "E3007 how to fix", "relevant": ["d074"], "type": "identifier", "lexical_overlap": 0.5}
+{"id": "q180", "query": "what does error code E3008 mean", "relevant": ["d075"], "type": "identifier", "lexical_overlap": 0.5}
+{"id": "q181", "query": "what does error code E4012 mean", "relevant": ["d076"], "type": "identifier", "lexical_overlap": 0.5}
+{"id": "q182", "query": "E4013 how to fix", "relevant": ["d077"], "type": "identifier", "lexical_overlap": 0.5}
+{"id": "q183", "query": "what does error code E5504 mean", "relevant": ["d079"], "type": "identifier", "lexical_overlap": 0.5}
+{"id": "q184", "query": "E6001 how to fix", "relevant": ["d080"], "type": "identifier", "lexical_overlap": 0.5}
+{"id": "q185", "query": "what does error code E6002 mean", "relevant": ["d081"], "type": "identifier", "lexical_overlap": 0.5}
+{"id": "q186", "query": "price of the Starter plan", "relevant": ["d082"], "type": "keyword", "lexical_overlap": 0.67}
+{"id": "q187", "query": "price of the Team plan", "relevant": ["d083"], "type": "keyword", "lexical_overlap": 0.67}
+{"id": "q188", "query": "price of the Business plan", "relevant": ["d084"], "type": "keyword", "lexical_overlap": 0.67}
+{"id": "q189", "query": "price of the Scale plan", "relevant": ["d085"], "type": "keyword", "lexical_overlap": 0.67}
+{"id": "q190", "query": "lifeycle rules arcihve tier days", "relevant": ["d001"], "type": "typo", "lexical_overlap": 0.6}
+{"id": "q191", "query": "HTTP 429 exponntial bacokff", "relevant": ["d004"], "type": "typo", "lexical_overlap": 0.5}
+{"id": "q192", "query": "preimum support 15 minute respnse", "relevant": ["d008"], "type": "typo", "lexical_overlap": 0.6}
+{"id": "q193", "query": "paretnal leave 16 weeks caregvers", "relevant": ["d011"], "type": "typo", "lexical_overlap": 0.6}
+{"id": "q194", "query": "reveiw self-assessment peer feedack five-point scale", "relevant": ["d014"], "type": "typo", "lexical_overlap": 0.75}
+{"id": "q195", "query": "Suica card Tokyo trans buses", "relevant": ["d018"], "type": "typo", "lexical_overlap": 0.8}
+{"id": "q196", "query": "travel insuance cancleled flights lost luggage", "relevant": ["d021"], "type": "typo", "lexical_overlap": 0.67}
+{"id": "q197", "query": "knievs sharp dull blades fingetips board", "relevant": ["d025"], "type": "typo", "lexical_overlap": 0.67}
+{"id": "q198", "query": "baknig soda acidic buttemilk", "relevant": ["d028"], "type": "typo", "lexical_overlap": 0.5}
+{"id": "q199", "query": "5 kiloeter beginner plan eight weeks", "relevant": ["d031"], "type": "typo", "lexical_overlap": 0.83}
+{"id": "q200", "query": "savnigs inteest 3.8 percent annual", "relevant": ["d034"], "type": "typo", "lexical_overlap": 0.67}
+{"id": "q201", "query": "emerency fund three to six months expesnes", "relevant": ["d039"], "type": "typo", "lexical_overlap": 0.67}
+{"id": "q202", "query": "passord manager unique master passowrd", "relevant": ["d042"], "type": "typo", "lexical_overlap": 0.6}
+{"id": "q203", "query": "plates boundraies earthuakes volcanoes collide", "relevant": ["d047"], "type": "typo", "lexical_overlap": 0.6}
+{"id": "q204", "query": "DNA bases adeinne thymine guanine cytoine", "relevant": ["d050"], "type": "typo", "lexical_overlap": 0.67}
+{"id": "q205", "query": "overftiting regularzation training examples", "relevant": ["d053"], "type": "typo", "lexical_overlap": 0.5}
+{"id": "q206", "query": "greenouse gases carbon dioixde methane fossil fuels", "relevant": ["d056"], "type": "typo", "lexical_overlap": 0.71}

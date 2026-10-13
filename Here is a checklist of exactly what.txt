@@ -1,0 +1,38 @@
+Here is a checklist of exactly what you should test and evaluate:
+
+1. Retrieval Accuracy Metrics
+
+You must evaluate how well each approach ranks relevant documents at the top of the results list. Test these at specific cut-offs (e.g., K = 5, 10, 100):
+• NDCG@K (Normalized Discounted Cumulative Gain): Tests how well the models handle graded relevance and position tracking. This should be your primary metric.
+• MRR@K (Mean Reciprocal Rank): Tests how quickly the first relevant document appears. Crucial for question-answering workloads.
+• Recall@K: Tests the percentage of total relevant documents successfully retrieved in the top K results. Essential if you are using dense retrieval as a first-stage ranker.
+
+2. Candidate Models (The Approaches)
+
+You should test and contrast at least three distinct classes of dense retrieval models to see how architecture changes performance:
+• Domain-Specific Bi-Encoders: Models fine-tuned explicitly on retrieval tasks (e.g., DPR, bge-large-en-v1.5, or cohere-embed-v3).
+• General/Unsupervised Models: Models trained via contrastive learning without explicit search labels (e.g., Contriever or base SimCSE).
+• Late-Interaction Models: Models that delay token interaction to keep search fast but highly contextualized (e.g., ColBERT).
+
+3. Efficiency & Computational Cost
+
+Dense retrieval involves a strict trade-off between accuracy and resource consumption. Your assignment should measure:
+• Index Construction Time: How long it takes to encode the entire corpus into vectors.
+• Index Size / Memory Footprint: The RAM/disk storage required by your vector index (e.g., comparing a raw Flat index vs. HNSW vs. a compressed IVF-PQ index).
+• Query Latency (QPS): The average time (in milliseconds) or Queries Per Second handled during inference.
+
+4. Generalization & Robustness (Zero-Shot)
+
+Test how the models perform when they encounter text they weren't explicitly trained on.
+• Out-of-Domain Performance: If your model was trained on web data (like MS MARCO), test it on a specialized subset (like medical text from BioASQ or financial documents) without fine-tuning it.
+• Handling Extreme Inputs: Test how the models cope with very short keyword queries versus long, conversational queries.
+
+Suggested Comparison Framework
+
+To organize your assignment, you can structure your results using a evaluation matrix like this:
+
+Approach / Model	NDCG@10 (In-Domain)	NDCG@10 (Out-of-Domain)	Latency per Query (ms)	Index Memory Size
+Baseline (BM25)	[Benchmark]	[Benchmark]	[Fastest]	[Smallest]
+Unsupervised (Contriever)				
+Bi-Encoder (BGE / DPR)				
+Late Interaction (ColBERT)
