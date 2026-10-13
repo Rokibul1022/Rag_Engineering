@@ -6,7 +6,6 @@ __pycache__/
 venv/
 data/*
 !data/.gitkeep
-datasets/ms_marco/
-ms_marco/
-outputs/
+/datasets/ms_marco/
+/ms_marco/
 =*
